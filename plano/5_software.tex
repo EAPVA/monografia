@@ -1,0 +1,214 @@
+\chapter{Projeto de \emph{software}}\label{cap:projeto}
+
+Dois \emph{softwares} foram considerados necessários para o desenvolvimento do 
+projeto, uma biblioteca que implementa o algoritmo T-HOG e um aplicativo de 
+testes para facilitar o processo de teste do algoritmo.
+
+\section{User Stories}
+O levantamento de requisitos para estes software foi realizado utilizando-se 
+\emph{User Stories} por que se encaixa melhor com nossa metodologia de 
+desenvolvimento (variação do \emph{Scrum}).
+
+\subsection{Biblioteca T-HOG}
+
+\noindent \textbf{Rodar no \emph{kit} de desenvolvimento}
+
+A biblioteca deve rodar em um \emph{kit} de desenvolvimento Jetson TK1.
+
+\noindent \textbf{Modificar parâmetros}
+
+Como usuário, eu quero modificar os parâmetros de configuração do T-HOG.
+
+\noindent \textbf{Carregar algoritmo treinado}
+
+Como usuário, quero carregar os parâmetros de treinados do T-HOG.
+
+\noindent \textbf{Executar T-HOG}
+
+Como usuário, eu quero ser capaz de usar a biblioteca para realizar extração de 
+placas em imagens e vídeo.
+
+\noindent \textbf{Extrair placas}
+
+Como usuário, eu quero que a biblioteca selecione e retorne a lista de placas 
+localizadas em uma imagem ou frame de vídeo.
+
+\noindent \textbf{Identificar}
+
+Como usuário, eu quero que a biblioteca me retorne se uma imagem é ou não uma 
+placa.
+
+\noindent \textbf{Usar parte da imagem}
+
+Como usuário, eu quero definir as coordenadas de uma região retangular da 
+imagem onde a biblioteca fará a extração.
+
+
+\subsection{Aplicativo de Testes}
+
+\noindent \textbf{Rodar no PC}
+
+Como usuário, eu quero executar o aplicativo de testes em um PC.
+
+\noindent \textbf{Comunicação com biblioteca}
+
+Como usuário, eu posso fazer o \emph{software} de testes no meu PC se comunicar 
+com a biblioteca de extração no \emph{kit} de desenvolvimento.
+
+\noindent \textbf{Selecão de imagens}
+
+Como usuário, eu quero escolher as imagens que vão ser usadas para teste e 
+treinamento.
+
+\noindent \textbf{Marcar placas}
+
+Como usuário, eu quero marcar cada uma das placas em cada imagem do conjunto de 
+imagens selecionado e salvar as marcações como arquivo.
+
+\noindent \textbf{Seleção automática de regiões sem placa}
+
+Eu, como usuário, quero que o aplicativo selecione automaticamente regiões de 
+imagens para serem usadas como regiões de ``não-placa'' para fins de
+treinamento, salvando-as em arquivo.
+
+\noindent \textbf{Seleção manual de regiões sem placa}
+
+Eu como usuário, quero selecionar regiões em imagens para serem usadas como 
+regiões de ``não-placa'' para treinamento e salvar para arquivo.
+
+\noindent \textbf{Treinamento}
+
+Com usuário, dado um conjunto de imagens com as placas marcadas, eu quero 
+realizar o treinamento do algoritmo T-HOG.
+
+\noindent \textbf{Salvar Treinamento}
+
+Como usuário, eu quero salvar e carregar o algoritmo treinado em arquivo.
+
+\noindent \textbf{Teste de treinamento}
+
+Como usuário, eu quero aplicar o algoritmo treinado em um conjunto de imagens 
+com as placas marcadas para avaliar a efetividade do treinamento e salvar o 
+resultado em arquivo.
+
+\noindent \textbf{Falsos positivos}
+
+Como usuário, eu gostaria de de salvar os falsos positivos para opcionalmente 
+usar como "não-placa" no algoritmo de treinamento.
+
+\noindent \textbf{Visualizar teste de imagem}
+
+Como usuário, eu quero poder visualizar o resultado de uma extração de uma 
+imagem comparando-a com a marcação manual.
+
+\noindent \textbf{Testes em vídeo}
+
+Como usuário, eu quero fornecer um vídeo para a biblioteca de extração rodando 
+no kit de desenvolvimento e visualizar as placas extraídas.
+
+\noindent \textbf{Executar treinamento pela linha de comando}
+
+Como usuário, gostaria de ter a opção de executar os treinamentos de forma não 
+interativa, para acelerar a execução e possiblitar a criação de scripts.
+
+\noindent \textbf{Executar testes pela linha de comando}
+
+Como usuário, gostaria de ter a opção de executar os testes de forma não 
+interativa, para acelerar a execução e possiblitar a criação de scripts.
+
+\section{Requisitos}
+A lista de requisitos para desenvolvimento foram numerados e classificados em 
+funcionais e não funcionais para cada um dos \emph{softwares}.
+
+\subsection{Biblioteca T-HOG}
+
+\subsubsection{Requisitos funcionais}
+
+RFB1 - A biblioteca deverá permitir ao usuário modificar parâmetros de 
+configuração do T-HOG
+
+RFB2 - A biblioteca deverá permitir ao usuário importar parâmetros de 
+treinamento do T-HOG
+
+RFB3 - A biblioteca deverá implementar o T-HOG para realizar identificação.
+
+RFB4 - A biblioteca deverá extrair as coordenadas das placas identificadas em 
+uma imagem ou frame de vídeo.
+
+RFB5 - A biblioteca deverá retornar se uma imagem é ou não de uma placa.
+
+RFB6 - A biblioteca deverá permitir escolher uma sub-região retangular onde a 
+extração será executada, através das suas coordenadas.
+
+\subsubsection{Requisitos não-funcionais}
+
+RNFB1 - A biblioteca deverá ser capaz de processar imagens a uma taxa superior 
+a um \emph{frame} por segundo.
+
+RNFB2 - A biblioteca deverá usar GPU para acelerar o processamento.
+
+RNFB3 - A biblioteca deverá ser ser acessível por \emph{software} escrito em C.
+
+RNFB4 - O aplicativo deve usar exclusivamente \emph{software} aberto.
+
+\subsection{Aplicativo de testes}
+
+\subsubsection{Requisitos funcionais}
+
+RFT1 - O aplicativo deverá permitir ao usuário selecionar imagens para usar no 
+treinamento.
+
+RFT2 - O aplicativo deverá permitir ao usuário selecionar imagens para usar no 
+teste.
+
+RFT3 - O aplicativo deverá permitir ao usuário marcar, com o \emph{mouse}, a 
+localização das placas numa imagem.
+
+RFT4 - O aplicativo deverá selecionar e marcar automaticamente algumas regiões 
+não escolhidas pelo usuário como ``não-placa'', de maneira aleatória.
+
+RFT5 - O aplicativo deverá persistir a seleção das placas e não-placas em 
+disco.
+
+RFT6 - O aplicativo deverá permitir ao usuário alterar as marcações de placa e 
+não-placa
+
+RFT7 - O aplicativo deverá permitir realizar o treinamento do algoritmo T-HOG 
+usando exemplos de ``placas'' e ``não-placas'' pré-marcadas.
+
+RFT8 - O resultado do treinamento deve ser persistido em disco.
+
+RFT9 - O aplicativo deverá permitir ao usuário realizar testes sobre o 
+algoritmo treinado pela extração de placas em imagens que já foram marcadas 
+manualmente (imagens de teste).
+
+RFT10 - O aplicativo deverá calcular medidas de desempenho dos testes 
+(precisão, cobertura, média harmônica)
+
+RFT11 - O aplicativo deve persistir o resultado dos testes em disco.
+
+RFT12 - O aplicativo deve permitir ao usuário salvar os falsos positivos como 
+seleções de ``não-placa''.
+
+RFT13 - O aplicativo deverá permitir ao usuário visualizar o resultado de cada 
+extração de um teste, comparando as marcações manuais com as automáticas.
+
+RFT14 - O aplicativo deverá fornecer um \emph{stream} de vídeo para a 
+biblioteca e sobrepor uma representação da localização das placas sobre a 
+imagem do vídeo.
+
+RFT15 - O aplicativo deverá permitir ao usuário modificar configurações da 
+biblioteca.
+
+RFT16 - O aplicativo deve ter a capacidade de ser invocado via linha de
+comando para executar os testes de forma não-interativa.
+
+RFT17 - O aplicativo deve poder ser invocado via linha de comando para executar 
+o treinamento de forma não-interativa.
+
+\subsubsection{Requisitos não-funcionais}
+
+RNFT1 - O aplicativo deverá ser executável em Windows e Linux.
+
+RNFT2 - O aplicativo deve usar exclusivamente \emph{software} aberto.
+

@@ -1,0 +1,75 @@
+\chapter{An\'{a}lise de Riscos}\label{cap:analiseRisco}
+
+\noident{\textbf{Dano no \emph{Kit} de desenvolvimento}}
+
+\begin{table}[h]
+\caption{Riscos do Projeto}
+\begin{center}
+\begin{tabular}{|p{3cm}|l|l|p{3cm}|}
+\hline
+\multicolumn{1}{|c|}{\textbf{Risco}}
+  & \multicolumn{1}{c|}{\textbf{Impacto}}
+  & \multicolumn{1}{c|}{\textbf{Probabilidade}}
+  & \multicolumn{1}{c|}{\textbf{Mitigação}}
+  \\ \hline
+
+
+Dano no Kit de desenvolvimento
+  & 0 - Crítico
+  & 1 - Moderada
+  & Adquirir kits adicionais
+  \\ \hline
+
+
+Desenvolvimento em Cuda complexo demais
+  & 0 - Crítico
+  & 2 - Baixa
+  & 
+    \tabitem priorizar alocação de horas-homem para esta atividade
+    \tabitem alocar atividades relacionadas a Cuda para começarem o mais
+      cedo possível
+  \\ \hline
+
+
+Um dos integrantes deixar a equipe
+  & 1 - Significativo
+  & 2 - Baixa
+  & 
+    \tabitem permitir horários flexíveis para que nenhum integrante, tenha
+      que sair por problema de tempo
+    \tabitem comunicação e reuniões constantes
+    \tabitem manter um ambiente de trabalho harmônico
+    \tabitem evitar a concentração de conhecimento em um dos membros da equipe
+  \\ \hline
+
+
+Atividades não relacionadas ao projeto ou imprevistos tomarem tempo excessivo
+da equipe
+  & 1 - Significativo
+  & 1 - Média
+  &
+    \tabitem realizar atividades com a maior antecedência possível
+    \tabitem priorizar este projeto em relação a outras atividades acadêmicas
+  \\ \hline
+
+
+O Kit de desenvolvimento não ser rápido o suficiente para rodar em tempo real
+  & 2 - Baixo
+  & 0 - Alta
+  & Nenhuma estratégia de mitigação conhecida
+  \\ \hline
+
+
+Treinamento do \emph{T-HOG}gerar baixa taxa de acertos
+  & 2 - Baixo
+  & 2 - Baixa
+  & Alocar um tempo razoável para fazer o \emph{tunning} do algoritmo
+  \\ \hline
+
+
+\end{tabular}
+
+\label{tab:riscos}
+\end{center}
+\end{table}
+

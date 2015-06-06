@@ -1,0 +1,131 @@
+% ---------- Preambulo ----------
+\instituicao{Universidade Tecnol\'ogica Federal do Paran\'a} % nome da instituicao
+\programa{Departamento Acad\^emico de Inform\'atica} % nome do programa ou departamento
+\area{Curso de Engenharia de Computa\c{c}\~ao} % área ou curso
+
+\documento{Plano de projeto de Trabalho de Conclus\~ao de Curso} % [Trabalho de Conclus\~ao de Curso] ou [Disserta\c{c}\~ao] ou [Tese]
+\nivel{Gradua\c{c}\~ao} % [Gradua\c{c}\~ao], [Especializa\c{c}\~ao], [Mestrado] ou [Doutorado]
+\titulacao{Engenheiro} % [Engenheiro], [Tecn\'ologo], [Bacharel], [Mestre] ou [Doutor]
+
+\titulo{\MakeUppercase{Extração Automática de Placas de Veículos usando
+  aceleração por GPU}} % titulo do trabalho em portugues
+\title{\MakeUppercase{Automatic License Plate Extraction using GPU acceleration}} % titulo do trabalho em ingles
+
+\autor{Francisco Delmar Kurpiel} % autor do trabalho
+\autordois{Luis Guilherme Camargo Machado}
+\autortres{Marcelo Teider Lopes}
+\cita{KURPIEL, Francisco D.; CAMARGO, Luis G. M.; LOPES, Marcelo T.} % sobrenome (maiusculas), nome do autor do trabalho
+
+\palavraschave{ALPR, extração de placas veiculares, GPU, T-HOG, vis\~ao computacional} %substituir pelas palavras-chave relacionadas ao seu tema de pesquisa
+\keywords{ALPR, license plate extraction, GPU, T-HOG, computer vision} % incluir palavras-chave em inglês
+
+\comentario{\UTFPRdocumentodata\ de Engenharia da Computa\c{c}\~ao, apresentado ao \UTFPRprogramadata\ da \ABNTinstituicaodata\ como requisito parcial para obten\c{c}\~ao do t\'itulo de ``\UTFPRtitulacaodata\ em Computa\c{c}\~ao''.} %\\ \'Area de Concentra\c{c}\~ao: \UTFPRareadata.}
+
+\orientador[Orientador:]{Prof. Bogdan Tomoyuki Nassu} % <- no caso de orientadora, usar esta sintaxe
+%\coorientador[Co-orientadora:]{} % <- no caso de co-orientadora, usar esta sintaxe
+
+\local{Curitiba} % cidade
+\data{2015} % ano
+
+\setcounter{tocdepth}{4} % para numeração das seções
+\setcounter{secnumdepth}{4}
+
+\numberwithin{equation}{chapter} %
+%\numberwithin{table}{chapter} %
+%\numberwithin{figure}{chapter} %
+
+\makeatletter  %% this is crucial
+ \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+                        {-2\p@ \@plus -0.5\p@ \@minus -0.5\p@}%
+                        %{8\p@ \@plus 4\p@ \@minus 4\p@}%     <-- this is copied from the subsection command
+                        {2\p@ \@plus 1\p@ \@minus 1\p@}%     <-- this is copied from the subsection command
+                        {\normalfont\normalsize\bfseries\boldmath
+                         \rightskip=\z@ \@plus 8em
+ \pretolerance=10000 }}
+\makeatother   %% this is crucial
+
+%---------- Inicio do Documento ----------
+\begin{document}
+
+\capa % geracao automatica da capa
+
+\folhaderosto % geracao automatica da folha de rosto
+% dedicatória (opcional)
+%\begin{dedicatoria}
+% Texto da dedicat\'oria.
+%\end{dedicatoria}
+
+% agradecimentos (opcional)
+%\begin{agradecimentos}
+% Texto dos agradecimentos.
+%\end{agradecimentos}
+
+% epigrafe (opcional)
+%\begin{epigrafe}
+%\end{epigrafe}
+
+%resumo
+\begin{resumo}
+
+Esse projeto tem o objetivo de extrair a localização de placas de veículos de 
+um \emph{stream} de vídeo, utilizando um algoritmo originalmente desenvolvido
+para identificar se uma imagem é ou não texto.
+ 
+Extração é uma das várias etapas necessárias para o processo de 
+reconhecimento autom\'atico de placas veículares. Em um \emph{stream} de vídeo, 
+extraímos, para cada \emph{frame}, a localização de qualquer n\'umero de placas 
+de ve\'iculos que possam ser encontradas. 
+
+Como o algoritmo utilizado para a extração \'e altamente paraleliz\'avel, pois 
+suas operações podem ser aplicadas de maneira independente em diversas 
+regi\~oes da imagem, propomos sua implementa\c{c}\~ao em uma 
+\sigla{GPU}{Graphical Processing Unit}.
+
+A implementação ser\'a 
+desenvolvida como uma biblioteca em \emph{C++} com o objetivo de ser utilizada 
+em um sistema completo de reconhecimento de placas. 
+
+
+\end{resumo}
+
+%abstract
+\begin{abstract}
+
+This project aims to extract the location of license plates in a video stream,
+by using an algorithm originally designed to identify if an image is or isn't 
+text.
+
+Extraction is one of the necessary steps for Automatic License Plate
+Recognition. On a video stream we extract, for each frame, the location of any
+number of license plates that can be found.
+
+As the algorithm we're using for extraction is highly parallelizable, as it's
+operations can be applied independently on several regions of the image, we
+propose to implement it on a GPU.
+
+The implementation will be developed as a C++ library, in
+order for it to be used in a complete ALPR system.
+
+\end{abstract}
+
+% listas que recomenda-se a partir de 5 elementos
+%\listadefiguras % geracao automatica da lista de figuras
+%Elaborado de acordo com a ordem apresentada no texto, com cada item designado por seu nome específico, acompanhado do respectivo número da página.
+
+\listadetabelas % geracao automatica da lista de tabelas
+%Elaborado de acordo com a ordem apresentada no texto, com cada item designado por seu nome específico, acompanhado do respectivo número da página.
+
+\listadesiglas % geracao automatica da lista de siglas
+%Constituída de uma relação alfabética das abreviaturas e siglas utilizadas no texto, seguido das palavras ou expressões correspondentes grafadas por extenso. Utilizada apenas se houver siglas.
+
+%\listadesimbolos % geracao automatica da lista de simbolos
+%Elaborado de acordo com a ordem apresentada no texto, seguido do significado correspondente. Utilizada apenas se houver símbolos.
+
+% sumario
+\sumario % geracao automatica do sumario
+
+%---------- Inicio do Texto ----------
+
+\setcounter{page}{9} % *** Necessário arrumar manualmente antes de imprimir
+
+

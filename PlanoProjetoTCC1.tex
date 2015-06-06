@@ -1,0 +1,65 @@
+
+% Plano do Projeto TCC1 - Professora Ana Cristina B. Kochem Vendramin (cristina@dainf.ct.utfpr.edu.br, criskochem@utfpr.edu.br)
+
+\documentclass{normas-utf-tex_07_2012} %Estilo de Formato criado pelo Prof. Hugo Vieira Neto (hvieir@utfpr.edu.br)
+%Se você ainda não conhece o latex, comece olhando o site do Prof. Hugo --> http://pessoal.utfpr.edu.br/hvieir/orient/
+
+%\documentclass[twoside,openright]{normas-utf-tex} %openright = o capitulo comeca sempre em paginas impares
+
+\usepackage[alf,abnt-emphasize=bf,bibjustif,recuo=0cm, abnt-etal-cite=2, abnt-etal-list=99]{abntcite} %configuracao das referencias bibliograficas.
+\usepackage[brazil]{babel} % pacote portugues brasileiro
+\usepackage[latin1]{inputenc} % pacote para acentuacao direta
+\usepackage{amsmath,amsfonts,amssymb,ams} % pacote matematico
+\usepackage[pdftex]{graphicx} % pacote grafico
+\usepackage{times} % fonte times
+\usepackage{a4wide}
+\usepackage[a4paper]{geometry} %define papel a4...
+\geometry{left=3cm,right=2cm,top=3cm,bottom=2cm} % ...e suas margens
+\usepackage{tabularx,multirow,longtable} %pacotes para mesclar linhas/colunas; tabelas grandes
+\usepackage{fancyhdr} % altera cabeçalhos
+\usepackage[T1]{fontenc} % acentuação direto no texto
+\usepackage{ae} % “Almost European”: aumenta a qualidade do pdf final
+\usepackage{rotating} % faz rotações de tabelas e figuras
+\usepackage{indentfirst} % tabula a primeira linha do parágrafo
+\usepackage[hang,small,bf]{caption} % legendas; nome "tabela" ou "figura" em negrito
+\usepackage{caption3}
+\usepackage{setspace} % ajuste do espaço entre-linhas
+\usepackage{algorithm}
+\usepackage{subfig}
+\usepackage{float} % posicionamento das figuras
+\usepackage{subfloat}
+\usepackage{arydshln}
+\makeatletter
+\renewcommand{\ALG@name}{Algoritmo}
+\usepackage{algorithmic}
+
+%para a hifenacao funcionar é necessario fazer a seguinte modificacao
+%Clique em Iniciar -> Programas -> MikTeX -> MiKTeX options Vá em Languages e marque a caixa português.
+
+%hifenacoes customizadas
+\hyphenation{mo-de-lar re-no-vá-veis re-pre-sen-tar re-pre-sen-ta-ção
+  la-te-rais res-pec-ti-vos re-a-ção re-a-li-zan-do o-pe-ra-ções cons-tan-te
+    di-fe-ren-tes tem-pe-ra-tu-ra ex-tre-mi-da-de ter-mo-di-nâ-mi-ca
+    trans-es-te-ri-fi-ca-ção In-ter-net com-pu-ta-cio-nal}
+
+%%%% Comandos introduzidos para controlar as alteracoes no fonte%%%%%%%%%%%%%%%%%
+% assigning colors to comments of each author
+\usepackage{color}
+\newcommand{\cris}[1]{\textcolor{blue}{#1}} %texto final
+\newcommand{\crisC}[1]{[\textcolor{blue}{#1}]} % comentário entre colchetes
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{plano/0_preambulo.tex}
+\input{plano/1_introducao.tex}
+\input{plano/2_levantamento.tex}
+\input{plano/3_metodologia.tex}
+\input{plano/4_recursos.tex}
+\input{plano/5_software.tex}
+\input{plano/6_cronograma.tex}
+\input{plano/7_riscos.tex}
+\input{plano/8_conclusao.tex}
+\input{plano/9_referencias.tex}
+
+
+\end{document}

@@ -1,0 +1,96 @@
+\chapter{Metodologia}\label{cap:metodologia}
+
+\section{Abordagem da equipe}
+
+Grande enfoque será dado nas etapas de aprendizado, já que nenhum dos membros 
+da equipe possui conhecimento prévio a respeito de desenvolvimento de software 
+para GPU(\emph{Graphical Processing Unit}) ou no algoritmo escolhido. Por este 
+motivo o algoritmo será implementado uma vez de forma serial, para aprendermos
+e verificarmos seu funcionamento, para então ser implementada em GPU. Além
+disso, serão estudados e implementados códigos mais simples, mesmo que
+não diretamente relacionados com o projeto, para adquirir \emph{know-how}
+a respeito das capacidades e peculiaridades do desenvolvimento em GPU.
+
+Como forma de controle e organização do desenvolvimento do projeto utilizaremos 
+uma variação da metodologia \emph{Scrum}. Tomaremos como \emph{product owner} o 
+orientador do projeto, e como \emph{scrum master} um dos autores do 
+\emph{software}. O ciclo de desenvolvimento terá uma semana.
+\textbf{O QUE ACHA DE ELIMINAR ESSE PARÁGRAFO?}
+
+O código será escrito como uma biblioteca com o intuito que outras pessoas a 
+utilizem, e, uma vez que este projeto esteja concluído, que seja possível 
+demonstrar seu funcionamento. Com essa finalidade, um aplicativo 
+de testes será desenvolvido para fornecer imagens para a biblioteca e 
+coletar as respostas da mesma.
+
+O projeto será publicado via \emph{github} e disponibilizado em código aberto 
+utilizando uma licença de \emph{software} livre, a ser definida em um momento 
+posterior. 
+
+\section{Tecnologias utilizadas}
+
+Iremos utilizar o \emph{kit} de desenvolvimento Jetson TK1 da NVidia, que 
+inclui um \sigla{SoC}{System on Chip}(\emph{System on Chip}) Tegra K1. O SoC 
+possui 4 \emph{cores} ARM\footnote{Originalmente \emph{Acorn RISC\footnotemark 
+Machine}, posteriormente modificado para \emph{Advanced RISC Machine}} 
+\footnotetext{\emph{Reduced Instruction Set Computing} - modernamente define-se
+como toda arquitetura que seja do tipo \emph{Load-Store}} e uma GPU com a 
+arquitetura Kepler 
+(Cortex A15), contendo 192 \emph{cores} Cuda.O sistema operacional utilizado 
+será linux, o compilador gcc e os compiladores de Cuda da NVidia. O algoritmo 
+T-HOG(\emph{Text-Histogram of Oriented Gradients}) será utilizado para análise 
+de imagem, sendo que o propósito desse é ser capaz de detectar qualquer tipo de 
+texto em qualquer imagem. O algoritmo será treinado para que execute a 
+extração de placas dos veículos constantes nas imagens fornecidas.
+
+\section{Etapas de desenvolvimento}
+O desenvolvimento será dividido em 7 grandes etapas:
+
+\begin{itemize}
+
+\item Criação de um aplicativo de testes para o algoritmo.
+\item Implementação serial do algoritmo T-HOG.
+\item Estudo da biblioteca Cuda e do \emph{kit} de desenvolvimento.
+\item Implementação da versão otimizada para GPU do algoritmo.
+\item Validação da versão para GPU.
+\item Testes de desempenho e \emph{tuning} de parâmetros do algoritmo.
+\item Documentação de código e escrita da monografia.
+
+\end{itemize}
+
+No início do projeto, implementaremos um aplicativo para demonstração 
+e teste do algoritmo T-HOG envolvendo apenas interface gráfica e processamento
+de arquivos. Em seguida implementaremos o próprio algoritmo 
+na linguagem C++. Essa etapa inicial envolverá aprender o
+funcionamento do algoritmo, os príncipios o guiam. Posteriormente este
+código será usado para realizar a verificação da
+implementação paralela e realizar testes de 
+comparação de performance. Essa implementação vai ser modularizada, de forma a 
+facilitar a implementação em GPU.
+
+Em seguida, iremos estudar a plataforma Jetson TK1 para entender seu 
+funcionamento e implementar alguns códigos com o objetivo de entender 
+programação paralela e programação em GPUs. Isso envolve aprender a utilizar a 
+tecnologia Cuda da NVidia.
+
+Com as duas primeiras etapas de estudo realizadas, passamos a reimplementar o 
+T-HOG para ser executado no kit Jetson. Como a versão inicial do
+algoritmo é sequencial, devemos modificá-lo para a
+arquitetura paralela fazendo todas as 
+adaptações necessárias para que seja executado na CPU/GPU do \emph{kit} Jetson
+TK1. Esta será a etapa 
+mais extensa do projeto devido a complexidade em se modificar o código atual, 
+escrever código para GPUs e para testá-lo apropriadamente. Essa versão precisa
+ser validada em comparação com a versão serial.
+
+Em seguinda será realizar o treinamento do T-HOG para 
+que este faça a identificação de placas de veículos automotivos e acompanhar
+quais foram as diferenças e os ganhos se comparados com a versão original.
+A implementação serial será usada como implementação de referência para
+desempenho e correção do algoritmo.
+
+A documentação do código e do projeto que, apesar de serem realizadas
+concomitantemente com as outras etapas, serão revisadas, organizadas
+e publicadas na etapa final do projeto.
+
+
