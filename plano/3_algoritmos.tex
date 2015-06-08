@@ -1,8 +1,141 @@
 \chapter{Algoritmos}
 
+O principal algoritmo usado no desenvolvimento desse projeto é o
+\sigla{HOG}{Histogram of Oriented Gradients} (\emph{Histogram of Oriented
+                                              Gradients}), um descritor de
+imagens que representa distribuição das orientações das bordas em diversas
+regiões da imagem. Mais especificamente, é usada uma variação do HOG voltada
+para texto, o \sigla{T-HOG}{Text-HOG} (\emph{Text-HOG}), desenvolvido em 
+\cite{minetto2013t}. Estes descritores se baseiam no conceito de gradientes de
+imagem, descrito a seguir.
+
+
 \section{Gradientes de Imagem}
+
+O gradiente de uma imagem em escala de cinza é um campo vetorial que indica, em
+cada ponto, a variação de intensidade luminosa. O vetor gradiente de um
+\emph{pixel} da imagem é definido por: 
+
+\[\nabla I(y,x) = {{\partial I(y,x)} \over {\partial x}} \hat{x} + 
+{{\partial I(y,x)} \over {\partial y}} \hat{y}\]
+
+As derivadas \(I_x = {{\partial I(y,x)} \over {\partial x}}\) e
+\(I_y  = {{\partial I(y,x)} \over {\partial y}}\) são normalmente aproximadas 
+através de convolução com algum filtro 2D, por exemplo:
+
+\begin{center}
+\(
+\left(
+\begin{matrix}
+-1 & 0 & 1
+\end{matrix}
+\right)
+\)
+ou
+\(
+\left(
+\begin{matrix}
+-1 \\
+0 \\
+1
+\end{matrix}
+\right)
+\)
+\end{center}
+
+Também é possível utilizar um filtro que extraia os gradientes ao mesmo tempo
+que faz suavização, como o filtro de Sobel:
+
+\begin{center}
+\[
+\left(
+  \begin{matrix}
+  -1 & 0 & 1 \\
+  -2 & 0 & 2 \\
+  -1 & 0 & 1
+  \end{matrix}
+  \right)
+\]
+\end{center}
+
+Os resultados obtidos para as derivadas parciais de primeira ordem costumam ser
+normalizados para a faixa de valores válidos da representação de imagem
+escolhida, de maneira a poder representá-los visualmente. TODO: Criar imagens
+de exemplo para demonstrar.
+
+O campo vetorial de gradientes vai obter valores próximos de zero em regiões
+homogêneas da imagem e valores diferentes de zero nos pontos de transição de
+intensidade, ou seja, nas bordas da imagem. Para obter informações mais
+significativas sobre a orientação das bordas, esse campo vetorial é
+transformado para o sistema de coordenadas polar:
+
+\begin{center}
+\[
+  I_{\rho} = {{\partial I(y,x)} \over {\partial \rho}} =
+\sqrt{{I_x}^2 + {I_y}^2}
+\]
+
+\[
+  I_{\phi} = {{\partial I(y,x)} \over {\partial \phi}} =
+\arctan{(I_x, I_y)}
+\]
+\end{center}
 
 \section{Histogram of Oriented Gradients - HOG}
 
+O descritor HOG, desenvolvido em \cite{dalal2005histograms}, é composto por
+histogramas da orientação do gradiente da imagem, calculados em diferentes 
+regiões. Vários parâmetros podem ser usados para configurar o algoritmo, entre 
+eles o número de classes do histograma, tamanho da célula, tamanho do bloco e
+deslocamento do bloco.
+
+Primeiramente, é calculado o campo vetorial de gradientes da imagem. Para cada
+\emph{pixel}, o gradiente é calculado independentemente para cada canal de cor, 
+e então o que tiver a maior magnitude é escolhido para ser usado.
+
+A imagem a ser descrita é então particionada em uma malha de células 
+de mesmo 
+tamanho, e um histograma é calculado para cada célula. As classes do histograma
+representam faixas de ângulos da orientação do gradiente e são ponderadas pela
+intensidade dos mesmos. Para evitar artefatos de quantização no histograma
+obtido, cada gradiente é dividido entre as duas classes cujo limiar é o mais
+próximo do ângulo do gradiente, ponderando pela diferença entre o ângulo do 
+gradiente e o limiar. 
+
+TODO: Colocar uma imagem para representar a equação.
+
+\[
+  \Delta \theta = {{I_{\phi} - \theta_{limiar}} \over {|C|}}
+\]
+
+\[
+  C_1 = (0.5 - \Delta \theta) * I_{\rho}
+\]
+\[
+  C_2 = (0.5 + \Delta \theta) * I_{\rho}
+\]
+
+Se o valor de \(I_\{phi}\) for menor do que \(\theta_{limiar}\), o valor de
+\(\Delta \theta\) vai ser negativo e a maior parte do gradiente vai ser
+colocada na classe \(C_1\). Caso contrário, a maior parte na classe \(C_2\).
+O valor de \(\Delta \theta\) sempre vai estar entre -0.5 e +0.5, senão o limiar 
+mais próximo estaria entre outras duas classes. O valor de \(C_1\) e \(C_2\)
+  será adicionado nas duas classes do histograma.
+
+Cada histograma obtido é normalizado, e depois eles são agrupados em blocos de 
+tamanho fixo. O agrupamento em blocos funciona como uma janela deslizante sobre
+as células, com cada histograma calculado possivelmente aparecendo
+múltiplas vezes no descritor final. TODO: colocar imagem para demonstrar o
+agrupamento em blocos. Dentro de cada bloco, os histogramas correspondentes são 
+concatenados e normalizados novamente. O descritor final é a concatenação do
+resultado de cada bloco.
+
 \section{Text-HOG - T-HOG}
+
+O T-HOG é uma variação do HOG desenvolvido em \cite{minetto2012text}. As
+principais diferenças entre os dois descritores são a maneira de normalizar o
+contraste e calcular o gradiente, a maneira de particionar as células e não 
+utiliza agrupamento em blocos.
+
+TODO: Expandir isso um pouco. Pensando em deixar para o próximo semestre.
 
