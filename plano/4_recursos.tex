@@ -1,14 +1,74 @@
 \chapter{Recursos de Hardware e Software}\label{cap:recursos}
 
-TODO: reformular completamente
-
 \section{Kit de desenvolvimento Jetson TK1}
 
-TODO: Falar da placa, mencionar o custo, falar sobre a escolha da placa.
+A placa embarcada Jetson TK1, produzida pela NVidia, foi escolhida para o
+projeto devido ao seu poder de processamento, baixo consumo e custo de \$192,
+valor relativamente baixo se comparado com as alternativas disponíveis no
+mercado.
+
+A placa utiliza o \sigla{SoC}{System on Chip}(\emph{System on Chip}) Tegra K1,
+um processador de 4 cores ARM Cortex A15 e possui uma GPU integrada com a
+arquitetura Kepler contendo 192 cores Cuda separados fisicamente em três blocos.
+Cada bloco tem sua própria cache que é compartilhada entre seus 64 cores e pode
+ser utilizada para sincronizar as threads em execução. A placa possui uma
+memória RAM de 2GB com largura de 64-bits, sendo ela compartilhada com entre a
+CPU e a GPU, não sendo necessário copiar os dados entre as partes, diferente de
+uma GPU discreta que possui sua própria memória dedicada separada da CPU. A
+memória é grande o suficiente para nos permitir trabalhar com imagem e vídeo. Em
+adição, a placa também possui uma saída HDMI permitindo que pudessemos testar
+nosso software com vídeos e imagens de alta resolução.
+
+Juntamente com a placa, utilizamos o ambiente de desenvolvimento da NVidia,
+maisespecificadamente, uma versão modificada do Eclipse que nos permite
+codificar qualquer tipo de aplicação para a placa e para GPUs.
+
+%A programação em uma GPU difere da programação em uma CPU em diversos aspectos
+%como, por exemplo, a GPU executa múltiplos kernels em paralelo e tem um acesso
+%especial à uma região separada de memória. Devido a sua arquitetura paralela,é
+%possível executar uma única tarefa com centenas de threads CUDA de maneira
+%independente, utilizando dados de entrada diferentes para cada uma dessas
+%threads. Portanto, caso seja possivel dividir uma tarefa grande em um
+%subconjunto de tarefas menores e independentes, a programaçao CUDA se
+%demonstra eficiente.
 
 \section{CUDA}
 
+CUDA, uma \emph{framework} desenvolvida pela NVidia, permite que utilizemos uma
+GPU para processamento de propósito geral, também conhecida como GPGPU. O
+objetivo é que aplicações possam utilizar a arquitetura paralela e da velocidade
+fornecidas poruma GPU para fins além de aplicações gráficas.
+
+A API nos permite organizar as threads em blocos e criar conjuntos de
+blocos chamados grids. É comum utilizarmos um número muito maior de blocos nos grids
+do que os fisicamente disponíveis na placa, portanto a API se encarrega de
+realizar o escalonamento automático das atividades entre os processadores e
+blocos fisicamente existentes. 
+
+Cada Thread e Bloco possui uma ID própria, sendo possivel utilizar essa informação para que cada Thread
+trabalhe com um conjunto de dados únicos. A API permite também organizar as threads em blocos e grids de maneira 2D ou 3D,
+ficando o ID da Thread ou Bloco como uma tupla. Em processamento de imagens, as tarefas são usualmente realizadas em matrizes de duas 
+dimensões, portanto utilizar uma organização em 2D facilita a escrita de código, com cada Thread processando um pixel da imagem.
+
+Sendo possível programar e executar centenas de threads de forma única, também
+éprovável que existam milhares de erros e bugs à serem consertados. Como o
+programa principal e cada thread são executados de forma independente, não há
+uma falha ou aviso quando algo está errado. É necessário esperar que as threads
+terminem suas execuções e sincronizá-las com o programa para que possamos
+procurar o erro. A API possui funções que permitem extrair qual o último erro
+encontrado na execução e assim podemos debuggar nossas aplicações.
+
+A API CUDA foi ideal para programarmos nossas aplicações, sendo que tivemos que
+superar algumas dificuldades com a programação na GPU.
+
+framework, multiplas threads por core, escalonamento pela API, warp, thread
+ID/block ID
 
 
 \section{OpenCV}
 
+OpenCV é uma biblioteca de código-aberto para aplicações de processamento de
+imagem. A biblioteca é disponibilizada gratuitamente e recebe suporte por parte
+de sua comunidade. OpenCV possui uma versão dedicada para aplicações em GPU e
+também a NVidia disponibiliza otimizações especifícas para o processador Tegra
+K1.
