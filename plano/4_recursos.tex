@@ -15,9 +15,7 @@ ser utilizada para sincronizar as threads em execução. A placa possui uma
 memória RAM de 2GB com largura de 64-bits, sendo ela compartilhada com entre a
 CPU e a GPU, não sendo necessário copiar os dados entre as partes, diferente de
 uma GPU discreta que possui sua própria memória dedicada separada da CPU. A
-memória é grande o suficiente para nos permitir trabalhar com imagem e vídeo. Em
-adição, a placa também possui uma saída HDMI permitindo que pudessemos testar
-nosso software com vídeos e imagens de alta resolução.
+memória é grande o suficiente para nos permitir trabalhar com imagem e vídeo.
 
 Juntamente com a placa, utilizamos o ambiente de desenvolvimento da NVidia,
 maisespecificadamente, uma versão modificada do Eclipse que nos permite
@@ -57,13 +55,6 @@ uma falha ou aviso quando algo está errado. É necessário esperar que as threads
 terminem suas execuções e sincronizá-las com o programa para que possamos
 procurar o erro. A API possui funções que permitem extrair qual o último erro
 encontrado na execução e assim podemos debuggar nossas aplicações.
-
-A API CUDA foi ideal para programarmos nossas aplicações, sendo que tivemos que
-superar algumas dificuldades com a programação na GPU.
-
-framework, multiplas threads por core, escalonamento pela API, warp, thread
-ID/block ID
-
 
 \section{OpenCV}
 
