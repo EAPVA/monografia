@@ -1,8 +1,8 @@
 \chapter{Histogram of Oriented Gradients}
 
-Neste capítulo são primeiramente apresentados alguns conceitos e definições
-referentes a processamento de imagens e processamento digital de
-imagens. Em seguida é discutido brevemente sobre extração de características. 
+Neste capítulo são primeiramente definidos alguns conceitos e definições
+referentes a imagens. Em seguida é apresentado brevemente o conceito de
+gradiente de imagem. 
 Finalmente, o algoritmo desenvolvido nesse projeto é apresentado, o
 \sigla{HOG}{Histogram of Oriented Gradients} (\emph{Histogram of Oriented
 Gradients}), um descritor de
@@ -25,8 +25,8 @@ de um campo escalar de duas dimensões \(I(x,y)\). Ou seja, para cada ponto no
 plano cartesiano \((x,y)\) está associada uma intensidade de luminosidade
 \(I\). Como restrições adicionais, o domínio da função será limitado por dois
 parâmetros, a altura e a largura da imagem (respectivamente \(I_H\) e \(I_W\))
-e o contra-domínio será normalizado para a faixa \([0,1]\). A equação
-\ref{eq:image_dominio} resume isso matematicamente.
+e o contra-domínio será normalizado para a faixa \([0,1]\). Em 
+\ref{eq:image_dominio} é apresentada a definição do domínio da função I. 
 
 \begin{equation} \label{eq:image_dominio}
 I : [0,I_W] \times [0,I_H] \mapsto [0,1], \quad I_W, I_H \in \Re

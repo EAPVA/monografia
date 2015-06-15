@@ -2,20 +2,7 @@
 
 \section{Contexto}
 
-TODO:revisar/reescrever
-
-Existe um projeto em desenvolvimento na \sigla{UTFPR}{Universidade Tecnológica 
-Federal do Paraná} (Universidade Tecnológica Federal do Paraná) que visa 
-utilizar imagem de vídeo para medir a velocidade de veículos, reduzindo os 
-custos de instalação de sensores na via. Uma das etapas necessárias é extração
-de placas, que são usadas para rastrear os veículos. A atual implementação 
-utiliza o algoritmo T-HOG em uma CPU Intel Core i7, não atingindo os requisitos 
-de tempo real de 50ms por \emph{frame} \cite{l2008a}. 
-
-Este trabalho propõe implementar o algoritmo T-HOG em \sigla{CUDA}{Compute 
-Unified Device Architecture} (\emph{Compute Unified Device Architecture}) para 
-ser executado em uma GPU, de forma a melhorar a performance e possivelmente 
-atingir os requisitos de tempo real. 
+TODO:reescrever/remover?
 
 \section{Objetivos}
 
@@ -41,10 +28,9 @@ o sistema:
 
 \noindent \textbf{Melhor taxa de \emph{frames}}
 
-Se os algoritmos forem mais rápidos torna-se possível analisar mais quadros por 
-segundo. Em situações nas quais os veículos podem trafegar em alta velocidade, 
-como em rodovias, é preferível que as imagens sejam analizadas em tempo real,
-onde a utilização de uma GPU pode gerar ganhos consideráveis de performance.
+Se os algoritmos forem mais rápidos, torna-se possível analisar mais quadros 
+por segundo em um sistema de vídeo. No melhor caso, torna-se possível analizar
+o sistema em tempo real.
 
 \noindent \textbf{Imagens de maior Resolução}
 
@@ -54,17 +40,13 @@ maior resolução, o que resulta em maior nitidez e uma maior taxa de acertos ou,
 em alguns casos, a substituição de duas câmeras por apenas uma de maior 
 resolução.
 
-\noindent \textbf{Processamento em tempo real}
-
-Algumas soluções armazenam as imagens para serem analisadas em lotes, devido à 
-incapacidade de tratamento destas imagens em tempo real. Isso elimina qualquer 
-oportunidade que demande identificação da placa no momento da filmagem.
-
 %\subsection{Científicos}
 
 \subsection{Econômicos}
 
-\noindent \textbf{Possibilidade de CPU de menor custo}
+\noindent \textbf{Redução de custo}
+
+TODO:escrever melhor esse item
 
 Dado um sistema que já atende aos requisitos da sua aplicação um sistema deste 
 pode rodar em um equipamento de menor custo, reduzindo o custo total da 
@@ -72,10 +54,9 @@ solução.
 
 \noindent \textbf{Menor consumo de energia}
 
-Dado que, em alguns casos, este tipo de sistema pode rodar, por exemplo, em um 
-veículo da polícia, o consumo de energia do sistema precisa ser controlado para 
-não exceder a capacidade de geração de energia do mesmo.
- 
+Uma GPU integrada possui um consumo de energia muito baixo se comparado a um
+processador CPU comum.
+
 \noindent \textbf{Menor demanda de largura de banda}
 
 Eliminação da transmissão e processamento remoto do \emph{stream} de vídeo em 
