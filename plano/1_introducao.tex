@@ -1,46 +1,8 @@
 \chapter{Introdução}\label{cap:introducao}
 
-O aumento do número de veículos em cidades implica em vários desafios de 
-planejamento urbano. Os problemas a serem resolvidos crescem tanto em escala
-quanto em complexidade.
-
-Em cidades maiores é preciso dimensionar vias e rotas para comportar os fluxos 
-de cada região. É necessário obter informação sobre origem e destino de cada 
-veículo para determinar a utilização das vias, e assim viabilizar o 
-planejamento. Fiscalização de velocidade, de conversões ilegais e licenciamento 
-dos veículos são tarefas fundamentais que se tornam inviáveis de serem feitas 
-manualmente em larga escala.
-
-Pode-se também pensar em tratamento de congestionamentos. Em algumas cidades, 
-onde há rodízio de veículos baseados em número de placa, é necessário um 
-sistema capaz de fiscalizar uma grande quantidade de veículos, idealmente 
-todos. Sistemas de tarifação de congestionamento, como o aplicado em Londres
-\cite{londres}\cite{londres2}
-, envolvem identificar todos os veículos em uma região e 
-emitir taxas, para desestimular o uso de veículos nestas áreas.
-
-Reconhecimento automático de placas é um processo que pode ser utilizado para 
-tratar esses problemas. Tipicamente isso é realizado sobre imagem de vídeo 
-e envolve várias etapas, sendo que uma delas, denominada extração, é 
-responsável por localizar as posições das placas na imagem.
-
-Muitos algoritmos de 
-visão computacional são altamente paralelizáveis, por operarem em dados de
-forma iterativa e independente. A arquitetura das GPUs foi desenvolvida para
-maximizar o \emph{throughput} desse tipo de algoritmo. Os resultados em 
-\cite{ready2007gpu} e \cite{park2008low} demonstram um ganho considerável de 
-performance ao se utilizar a GPU para atividades relacionadas com imagem 
-e vídeo, ao invés de simplesmente utilizar a CPU. 
-
-No entanto, para se obter tais ganhos deve-se utilizar a GPU de forma 
-eficiente, sendo necessário entender sua estrutura e funcionamento para 
-conseguir bons resultados. Se comparada com uma CPU, a GPU também possui 
-limitações que devem ser levadas em consideração como, por exemplo, menor 
-\emph{clock} e \emph{overhead} de transferência de dados.
-
-%\section{Motivação}
-
 \section{Contexto}
+
+TODO:revisar/reescrever
 
 Existe um projeto em desenvolvimento na \sigla{UTFPR}{Universidade Tecnológica 
 Federal do Paraná} (Universidade Tecnológica Federal do Paraná) que visa 
@@ -59,32 +21,16 @@ atingir os requisitos de tempo real.
 
 \noindent \textbf{Objetivo Geral}
 
-Realizar uma implementação do algoritmo T-HOG em GPU para localizar placas de
-veículos em um \emph{stream} de vídeo.
+Implementar o descritor de imagens HOG em CPU e GPU e comparar as
+implementações em tempo de execução e diferença de resultados.
 
-\noindent \textbf{Objetivo Específico}
+\noindent \textbf{Objetivos Específico}
 
-TODO: Separar os objetivos, colocar metas e ações para cada um
-
-Implementar o algoritmo T-HOG usando \sigla{API}{Application Programming 
-Interface} (\emph{Application Programming Interface}) Cuda da NVIDIA no 
-\emph{kit} de desenvolvimento Jetson do mesmo fornecedor. A implementação será 
-feita como uma biblioteca em C++, de forma que possa ser utilizado por 
-qualquer \emph{software} que queira implementar as outras etapas do 
-reconhecimento de placas.
+TODO
 
 \noindent \textbf{Escopo}
 
-Das diversas etapas do reconhecimento de placas de trânsito, este projeto trata 
-apenas da extração. Este processo inclui apenas indicar quantas placas foram 
-encontradas e sua localização. 
-Estas informações serão disponibilizadas continuamente via
-\sigla{API}{Application Programming Interface}(\emph{Application Programming
-Interface}) da biblioteca em C++.
-
-O escopo deste projeto não inclui etapas posteriores à extração, como 
-tratamento de imagem, segmentação de dígitos e reconhecimento dos caracteres 
-constantes na mesma. 
+TODO
 
 \section{Resultados Esperados}
 
@@ -144,23 +90,14 @@ sumarizados, conforme necessidades específicas.
 
 \section{Apresentação do documento}
 
-No capítulo 2 será apresentado um breve levantamento de trabalhos relacionados
-a reconhecimento automático de placas, reconhecimento de texto e uso de GPU
-para extração de características.
+Inicialmente será apresentado um breve levantamento de trabalhos relacionados
+à extração de características utilizando GPUs. A seguir será formalizada a
+teoria utilizada no desenvolvimento do trabalho, em dois capítulos: um sobre
+processamento de imagens e o algoritmo descrito utilizado e outro sobre a
+arquitetura da GPU e o modelo de programação utilizado para processamento
+paralelo na GPU.
 
-No capítulo 3 são descritos os principais algoritmos relevantes ao trabalho, o
-cálculo de gradientes, o descritor HOG e o descritor T-HOG.
-
-No capítulo 4 encontram-se informações sobre os recursos de hardware e software
-utilizados.
-
-No capítulo 5 tem-se o relatório do trabalho desenvolvido.
-
-O capítulo 6 relata os resultados dos testes.
-
-O capítulo 7 trata da gestão do projeto. Contém o número de horas trabalhadas, a
-análise de riscos e algumas considerações da equipe sobre o projeto.
-
-No capítulo 8 se colocam considerações finais sobre os resultados e indicações
-de trabalhos futuros.
+No capítulo 5 se encontra um resumo do trabalho desenvolvido, seguido de um
+relatório dos testes realizados. Finalmente, encontram-se algumas considerações
+finais sobre o projeto, incluindo indicações de trabalhos futuros.
 

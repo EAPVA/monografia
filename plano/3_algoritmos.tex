@@ -1,67 +1,92 @@
-\chapter{Algoritmos}
+\chapter{Histogram of Oriented Gradients}
 
-O principal algoritmo usado no desenvolvimento desse projeto é o
+Neste capítulo são primeiramente apresentados alguns conceitos e definições
+referentes a processamento de imagens e processamento digital de
+imagens. Em seguida é discutido brevemente sobre extração de características. 
+Finalmente, o algoritmo desenvolvido nesse projeto é apresentado, o
 \sigla{HOG}{Histogram of Oriented Gradients} (\emph{Histogram of Oriented
-                                              Gradients}), um descritor de
-imagens que representa distribuição das orientações das bordas em diversas
-regiões da imagem. Mais especificamente, é usada uma variação do HOG voltada
-para texto, o \sigla{T-HOG}{Text-HOG} (\emph{Text-HOG}), desenvolvido em 
-\cite{minetto2013t}. Estes descritores se baseiam no conceito de gradientes de
-imagem, descrito a seguir.
+Gradients}), um descritor de
+imagens que representa distribuição local de orientações de bordas.
 
+\section{Definição de Imagem}
+
+Uma imagem é definida como um artefato que retrata ou armazena percepção
+visual, podendo ser, por exemplo, uma foto, uma estátua, um vídeo, 
+um arquivo de imagem comprimido JPEG, ou mesmo a imagem gerada
+pelo sistema visual humano \cite{wiki:image}. No escopo desse trabalho, nos
+preocuparemos apenas com imagens bidimensionais estáticas. Para cada ponto num
+plano de duas dimensões a imagem terá uma informação visual, como por exemplo a
+intensidade de luminosidade ou então dados sobre o espectro eletromagnético
+percebido naquele ponto.
+
+Podemos representar matematicamente uma
+imagem contendo apenas informações de luminosidade através
+de um campo escalar de duas dimensões \(I(x,y)\). Ou seja, para cada ponto no
+plano cartesiano \((x,y)\) está associada uma intensidade de luminosidade
+\(I\). Como restrições adicionais, o domínio da função será limitado por dois
+parâmetros, a altura e a largura da imagem (respectivamente \(I_H\) e \(I_W\))
+e o contra-domínio será normalizado para a faixa \([0,1]\). A equação
+\ref{eq:image_dominio} resume isso matematicamente.
+
+\begin{equation} \label{eq:image_dominio}
+I : [0,I_W] \times [0,I_H] \mapsto [0,1], \quad I_W, I_H \in \Re
+\end{equation}
+
+\subsection{Imagem Digital}
+
+Podemos extrair uma imagem digital a partir da imagem analógica fazendo uma
+amostragem da luminosidade e posteriormente quantizando os valores de cada 
+ponto. De certa maneira, é isso que é feito quando uma imagem é
+capturada por uma câmera. Como é feita uma quantização da imagem, é necessário
+escolher uma escala de resolução para a mesma, normalmente representada pelo
+número de \emph{bits} usados para a representação de cada ponto. 
+
+Sendo assim, uma \emph{imagem digital} pode ser definida matematicamente como
+uma função discreta que, para cada par \(\mathtt{[x,y]}\), associa um número
+\(\mathtt{I[x,y]}\). Como o valor de \(I(x,y)\) foi normalizado, definindo um 
+valor \(I_{max}\) para o maior valor da
+escala quantizada (normalmente \(1\) ou \(2^n\ - 1\), sendo \(n\) o número de
+                   \emph{bits}), tem-se que:
+
+\begin{equation} \label{eq:image_digital}
+  \mathtt{I[x,y]} = I_{max} * I(x,y)
+\end{equation}
+
+Para obter uma imagem colorida, usualmente são 
+medidas e armazenadas a luminosidade das cores vermelha, verde e azul 
+separadamente. Essas cores foram escolhidas de maneira a imitar o comportamento
+do sistema visual humano, e a grande maiora dos sitemas de captura,
+   armazenamento e reprodução de imagens digitais utiliza essas cores. A essa
+   informação de luminosidade independentes é dado o nome de \emph{canal de
+     cor}. Existem outros sistemas de representação de cor, mas eles fogem do
+     escopo desse projeto.
+
+\subsection{\emph{Pixel}}
+
+\emph{Pixel} é definido como o menor elemento (geograficamente) acessível de 
+uma imagem digital. Cada ponto \(\mathtt{[x,y]}\) da imagem corresponde a um
+\emph{pixel}. Cada \emph{pixel} tem um ou mais canais de cor. O conceito pode
+ser extendido para a imagem analógica, com cada ponto no espaço representando
+um \emph{pixel}.
+
+Normalmente, uma imagem é representada no computador como uma matriz de 
+\emph{pixels}, armazenada linha a linha, começando pelo canto superior esquerdo
+da imagem. Por causa disso, a representação de \(\mathtt{y}\) é normalmente
+invertida, conforme demonstrado na figura \ref{fig:y_invertido}.
+
+TODO: colocar figura
 
 \section{Gradientes de Imagem}
 
-O gradiente de uma imagem em escala de cinza é um campo vetorial que indica, em
-cada ponto, a variação de intensidade luminosa. O vetor gradiente de um
-\emph{pixel} da imagem é definido por: 
+O gradiente de uma imagem em escala de cinza analógica é um campo vetorial que 
+indica, em
+cada ponto, a variação de intensidade luminosa. O vetor gradiente é definido 
+pela equação \ref{eq:gradient}: 
 
-\[\nabla I(y,x) = {{\partial I(y,x)} \over {\partial x}} \hat{x} + 
-{{\partial I(y,x)} \over {\partial y}} \hat{y}\]
-
-As derivadas \(I_x = {{\partial I(y,x)} \over {\partial x}}\) e
-\(I_y  = {{\partial I(y,x)} \over {\partial y}}\) são normalmente aproximadas 
-através de convolução com algum filtro 2D, por exemplo:
-
-\begin{center}
-\(
-\left(
-\begin{matrix}
--1 & 0 & 1
-\end{matrix}
-\right)
-\)
-ou
-\(
-\left(
-\begin{matrix}
--1 \\
-0 \\
-1
-\end{matrix}
-\right)
-\)
-\end{center}
-
-Também é possível utilizar um filtro que extraia os gradientes ao mesmo tempo
-que faz suavização, como o filtro de Sobel:
-
-\begin{center}
-\[
-\left(
-  \begin{matrix}
-  -1 & 0 & 1 \\
-  -2 & 0 & 2 \\
-  -1 & 0 & 1
-  \end{matrix}
-  \right)
-\]
-\end{center}
-
-Os resultados obtidos para as derivadas parciais de primeira ordem costumam ser
-normalizados para a faixa de valores válidos da representação de imagem
-escolhida, de maneira a poder representá-los visualmente. TODO: Criar imagens
-de exemplo para demonstrar.
+\begin{equation} \label{eq:gradient}
+\nabla I(x,y) = {{\partial I(y,x)} \over {\partial x}} \hat{x} + 
+{{\partial I(x,y)} \over {\partial y}} \hat{y}
+\end{equation}
 
 O campo vetorial de gradientes vai obter valores próximos de zero em regiões
 homogêneas da imagem e valores diferentes de zero nos pontos de transição de
@@ -69,53 +94,133 @@ intensidade, ou seja, nas bordas da imagem. Para obter informações mais
 significativas sobre a orientação das bordas, esse campo vetorial é
 transformado para o sistema de coordenadas polar:
 
-\begin{center}
-\[
+\begin{equation} \label{eq:polar_rho}
   I_{\rho} = {{\partial I(y,x)} \over {\partial \rho}} =
 \sqrt{{I_x}^2 + {I_y}^2}
-\]
+\end{equation}
 
-\[
+\begin{equation} \label{eq:polar_phi}
   I_{\phi} = {{\partial I(y,x)} \over {\partial \phi}} =
 \arctan{(I_x, I_y)}
-\]
-\end{center}
+\end{equation}
+
+\subsection{Gradiente de Imagem Digital}
+
+O gradiente em uma imagem digital pode ser definido como na equação
+\ref{eq:grad_digital}:
+
+\begin{equation} \label{eq:grad_digital}
+\nabla \mathtt{I[x,y]} = {\Delta}\mathtt{_{x}} \mathtt{I[x,y] \hat{x}} +
+\Delta \mathtt{_{y}} \mathtt{I[x,y]}
+\end{equation}
+
+Os valores de \(\Delta \mathtt{_{x}} \mathtt{I[x,y]}\) e \(\Delta \mathtt{_{y}}
+\mathtt{I[x,y]}\) podem ser definidos de várias maneiras distintas. Uma opção,
+  por exemplo, está demonstrada respectivamente nas equações \ref{eq:bad_dx} e
+  \ref{eq:bad_dy}.
+
+\begin{equation} \label{eq:bad_dx}
+\Delta \mathtt{_{x}} \mathtt{I[x,y]} = \mathtt{I[x+1,y]} - \mathtt{I[x,y]}
+\end{equation}
+
+\begin{equation} \label{eq:bad_dy}
+\Delta \mathtt{_{y}} \mathtt{I[x,y]} = \mathtt{I[x,y+1]} - \mathtt{I[x,y]}
+\end{equation}
+
+Ou seja, a variação em \(\mathtt{x}\) é a diferença entre o \emph{pixel} à
+direita e o atual, enquanto a variação em \(\mathtt{y}\) é a diferença entre o
+\emph{pixel} acima e o atual. Um problema com essa difinição é que o resultado
+da variação em \(\mathtt{x}\) fica deslocada para a direita, enquando a
+variação em \(\mathtt{y}\) fica deslocada para cima. Devido a isso, é mais
+utilizada a definição mostrada em \ref{eq:good_x} e \ref{eq:good_y},
+          que é simétrica em relação ao \emph{pixel} em ambos os sentidos:
+
+\begin{equation} \label{eq:bad_dx}
+\Delta \mathtt{_{x}} \mathtt{I[x,y]} = \mathtt{I[x+1,y]} - \mathtt{I[x-1,y]}
+\end{equation}
+
+\begin{equation} \label{eq:bad_dy}
+\Delta \mathtt{_{y}} \mathtt{I[x,y]} = \mathtt{I[x,y+1]} - \mathtt{I[x,y-1]}
+\end{equation}
+
+Os resultados obtidos podem ser
+normalizados para a faixa de valores válidos da representação de imagem, 
+             de maneira a poder representá-los visualmente. TODO: Criar imagens
+de exemplo para demonstrar.
+
+Existem várias maneiras de obter o gradiente para uma imagem colorida. Será
+utilizada a mesma escolhida pelo trabalho onde o descritor HOG foi
+originalmente proposto \cite{dalal2005histograms}. Para cada \emph{pixel}, será
+calculado o gradiente para cada canal de cor e o maior valor será escolhido.
 
 \section{Histogram of Oriented Gradients - HOG}
 
-O descritor HOG, desenvolvido em \cite{dalal2005histograms}, é composto por
-histogramas da orientação do gradiente da imagem, calculados em diferentes 
-regiões. Vários parâmetros podem ser usados para configurar o algoritmo, entre 
-eles o número de classes do histograma, tamanho da célula, tamanho do bloco e
-deslocamento do bloco.
+O descritor HOG, descrito em \cite{dalal2005histograms}, é composto por
+diversos histogramas das orientações dos gradientes da imagem, calculados em 
+uma partição da imagem em diferentesi regiões, chamadas de \emph{células}.
 
-Primeiramente, é calculado o campo vetorial de gradientes da imagem. Para cada
-\emph{pixel}, o gradiente é calculado independentemente para cada canal de cor, 
-e então o que tiver a maior magnitude é escolhido para ser usado.
-
+Primeiramente, são calculados os gradientes de cada canal de cor da imagem e,
+  para cada \emph{pixel}, o valor do maior canal é mantido. 
 A imagem a ser descrita é então particionada em uma malha de células 
 de mesmo 
 tamanho, e um histograma é calculado para cada célula. As classes do histograma
 representam faixas de ângulos da orientação do gradiente e são ponderadas pela
-intensidade dos mesmos. Para evitar artefatos de quantização no histograma
+magnitude dos mesmos. Para evitar artefatos de quantização no histograma
 obtido, cada gradiente é dividido entre as duas classes cujo limiar é o mais
 próximo do ângulo do gradiente, ponderando pela diferença entre o ângulo do 
 gradiente e o limiar. 
 
-TODO: Colocar uma imagem para representar a equação.
+A figura \ref{fig:histogram} e as equações
+\ref{eq:delta_theta}, \ref{eq:c1}, \ref{eq:c2}, \ref{eq:mod_c} e 
+\ref{eq:limiar} 
+demonstram as relações entre o vetor gradiente de
+um \emph{pixel} e o valor adicionado no histograma. 
+As equações \ref{eq:p_c1} e \ref{eq:p_c2} demonstram como podem ser
+obtidas as posições das classes a partir do valor da fase do gradiente,
+        associando a cada classe um indentificador de \(0\) até \(n-1\), sendo
+        \(n\) o número de classes.
 
-\[
+\begin{figure}[h!]
+  \centering
+    \includegraphics[keepaspectratio=true,width=0.9\textwidth]
+      {images/polar_hist.png}
+    \caption{À esquerda a representação cartesiana e polar do gradiente. À
+      direita representado o histograma e os valores somados a ele por esse
+        gradiente.}
+\label{fig:histogram}
+\end{figure}
+
+\begin{equation} \label{eq:delta_theta}
   \Delta \theta = {{I_{\phi} - \theta_{limiar}} \over {|C|}}
-\]
+\end{equation}
 
-\[
+\begin{equation} \label{eq:c1}
   C_1 = (0.5 - \Delta \theta) * I_{\rho}
-\]
-\[
-  C_2 = (0.5 + \Delta \theta) * I_{\rho}
-\]
+\end{equation}
 
-Se o valor de \(I_{phi}\) for menor do que \(\theta_{limiar}\), o valor de
+\begin{equation} \label{eq:c2}
+  C_2 = (0.5 + \Delta \theta) * I_{\rho}
+\end{equation}
+
+\begin{equation} \label{eq:mod_c}
+{|C|} = {{2 \pi} \over {n}}
+\end{equation}
+
+\begin{equation} \label{eq:limiar}
+  \theta_{limiar} = \left\lceil {{I_{\phi}} \over {|C|}} \right\rceil * |C|
+\end{equation}
+
+\begin{equation} \label{eq:p_c1}
+id(C_1) = 
+\left\lfloor {{I_{\phi} - \left( {{|C|} \over {2}} \right)} \over {|C|}} 
+\right\rfloor \bmod n
+\end{equation}
+
+\begin{equation} \label{eq:p_c2}
+id(C_2) = \left( id (C_1) + 1 \right) \bmod n
+\end{equation}
+
+Se o valor de \(I_{\phi}\) for menor do que \(\theta_{limiar}\), o valor de
 \(\Delta \theta\) vai ser negativo e a maior parte do gradiente vai ser
 colocada na classe \(C_1\). Caso contrário, a maior parte na classe \(C_2\).
 O valor de \(\Delta \theta\) sempre vai estar entre -0.5 e +0.5, senão o limiar 
@@ -128,14 +233,7 @@ as células, com cada histograma calculado possivelmente aparecendo
 múltiplas vezes no descritor final. TODO: colocar imagem para demonstrar o
 agrupamento em blocos. Dentro de cada bloco, os histogramas correspondentes são 
 concatenados e normalizados novamente. O descritor final é a concatenação do
-resultado de cada bloco.
+resultado de cada bloco, resultando em um vetor de \emph{número de blocos \(*\) 
+número de células por bloco \(*\) número de classes do histograma} dimensões.
 
-\section{Text-HOG - T-HOG}
-
-O T-HOG é uma variação do HOG desenvolvido em \cite{minetto2012text}. As
-principais diferenças entre os dois descritores são a maneira de normalizar o
-contraste e calcular o gradiente, a maneira de particionar as células e não 
-utiliza agrupamento em blocos.
-
-TODO: Expandir isso um pouco. Pensando em deixar para o próximo semestre.
 
