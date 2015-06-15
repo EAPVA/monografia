@@ -1,36 +1,61 @@
-\chapter{Recursos de Hardware e Software}\label{cap:recursos}
+\chapter{CUDA: Arquitetura e Programação}\label{cap:recursos}
 
-\section{Kit de desenvolvimento Jetson TK1}
+CUDA é uma arquitetura de hardware e software, desenvolvida pela NVidia, que permite
+programar uma GPU para executar código de aplicações gerais e escrita em linguagens
+de programação de alto nível.
 
-A placa embarcada Jetson TK1, produzida pela NVidia, foi escolhida para o
-projeto devido ao seu poder de processamento, baixo consumo e custo de \$192,
-valor relativamente baixo se comparado com as alternativas disponíveis no
-mercado.
+CUDA nasceu como uma solução para os problemas do modelo GPGPU, onde a API gráfica
+era utilizada para computação de propósito geral. No modelo GPGPU, o programador 
+deveria ter um grande conhecimento sobre o funcionamento da GPU e da API gráfica.
+Os problemas tinham que ser descritos como coordenadas de vértices, texturas e
+\emph{shaders}, o que aumentava sua complexidade. Por último, GPUs não tinham
+suporte a características básicas de programação e a falta de suporte a variáveis
+de ponto flutuante de dupla precisão, restringia os modelos de programação que 
+poderiam ser utilizados.
+  
 
-A placa utiliza o \sigla{SoC}{System on Chip}(\emph{System on Chip}) Tegra K1,
-um processador de 4 cores ARM Cortex A15 e possui uma GPU integrada com a
-arquitetura Kepler contendo 192 cores Cuda separados fisicamente em três blocos.
-Cada bloco tem sua própria cache que é compartilhada entre seus 64 cores e pode
-ser utilizada para sincronizar as threads em execução. A placa possui uma
-memória RAM de 2GB com largura de 64-bits, sendo ela compartilhada com entre a
-CPU e a GPU, não sendo necessário copiar os dados entre as partes, diferente de
-uma GPU discreta que possui sua própria memória dedicada separada da CPU. A
-memória é grande o suficiente para nos permitir trabalhar com imagem e vídeo.
+\section{GPU}
 
-Juntamente com a placa, utilizamos o ambiente de desenvolvimento da NVidia,
-maisespecificadamente, uma versão modificada do Eclipse que nos permite
-codificar qualquer tipo de aplicação para a placa e para GPUs.
+Uma Graphics Processor Unit (GPU) é uma arquitetura computacional que possui
+centenas de processadores, otimizados para executarem de forma paralela.
+GPUs foram criadas originalmente na década de 70 para acelerar o desenho de gráficos 
+de jogos eletrônicos. Desde então, as GPUs tem aumentado sua capacidade de 
+processamento devido à demanda por gráficos melhores. 
 
-%A programação em uma GPU difere da programação em uma CPU em diversos aspectos
-%como, por exemplo, a GPU executa múltiplos kernels em paralelo e tem um acesso
-%especial à uma região separada de memória. Devido a sua arquitetura paralela,é
-%possível executar uma única tarefa com centenas de threads CUDA de maneira
-%independente, utilizando dados de entrada diferentes para cada uma dessas
-%threads. Portanto, caso seja possivel dividir uma tarefa grande em um
-%subconjunto de tarefas menores e independentes, a programaçao CUDA se
-%demonstra eficiente.
+Em 1986, a Texas Instruments lançou o primeiro microprocessador com uma GPU 
+capaz de executar código para aplicações gerais. Porém, apenas em 2001, se tornou mais prático 
+utilizar GPUs para aplicações de uso geral.  
 
-\section{CUDA}
+Atualmente, uma GPU pode ser encontrada em computadores pessoais, laptops,
+celulares e até mesmo em placas embarcadas. Uma GPU Discreta, usualmente as mais
+avançadas, possui uma memória RAM própria e muito mais núcleos. 
+No entanto, a GPU discreta também é mais cara, sendo comumente utilizada
+para aplicações gráficas e jogos eletrônicos. A GPU Integrada vem junto a CPU 
+na mesma pastilha, essa chamada de GPU Integrada, utiliza parte da memória 
+RAM do sistema,no entanto, são muito menos potentes do que as discretas.
+
+\section{Arquitetura}
+
+A arquitetura CUDA foi desenvolvida pela NVidia com o objetivo de permitir que
+uma GPU fosse programável para aplicações de uso geral e utilizando código 
+escrito em linguagens de programação de alto nível. 
+
+Um núcleo CUDA é, essencialmente, um conjunto de processadores otimizados para tarefas paralelizáveis
+e também podem ser programados para aplicações gerais. Esses núcelos seguem o paradigma 
+SIMD (Single Instruction, Multiple Data), ondeum grupo de processadores executam
+a mesma instrução, de forma paralela, porém cada processador é encarregado
+de um pacote de dados diferente. 
+
+bloco e malha
+
+
+
+
+GPUs utilizam a arquitetura SIMD (Single Instruction, Multiple Data), onde 
+a mesma instrução é executada em diferentes dados. 
+
+
+\section{Programação}
 
 CUDA, uma \emph{framework} desenvolvida pela NVidia, permite que utilizemos uma
 GPU para processamento de propósito geral, também conhecida como GPGPU. O
