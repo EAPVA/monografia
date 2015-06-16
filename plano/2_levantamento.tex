@@ -1,100 +1,13 @@
 \chapter{Levantamento Bibiografico}\label{cap:levbibliog}
 
-\section{Localização de Placas}
+\section{Extração de características de imagens}
 
-\cite{l2008a} faz um \emph{survey} em 2008 de várias técnicas de reconhecimento 
-de placas de trânsito. Neste artigo, captura em tempo real com limite de
-50ms por \emph{frame}, já que a taxa de 20\sigla{fps}{\emph{frames}  por
-segundo}(\emph{frames} por segundo) 
-é suficiente para que não se perca veículos que estejam passando pela câmera.
-Este \emph{survey} encontrou 
-sistemas que tipicamente fazem pré processamento, alguns usando imagens 
-binárias, alguns usando tons de cinza e outros usando cores.
-
-Imagens binárias: Alguns sistemas localizam placas usando algoritmos de 
-detecção de bordas que, apesar de muito rápidos, geram muitos falsos positivos. 
-Um sistema usa análise de componentes conectados que analisa a geometria
-dos elementos da imagem (dimensões e área) para determinar se cada 
-componente é uma placa de trânsito. O uso do operador Sobel é encontrado
-em vários dos algorítmos estudados devido às suas propriedades de eliminação
-de ruído e do uso relativamente baixo de CPU (\emph{Central Processing Unit}), 
-permitindo que o processamento total fique dentro dos 50ms.
-
-Imagens em tons de cinza: Em quantidade de aplicações esta categoria possui o 
-maior número publicações. Vários algorítimos usam contagem do número de 
-variações abruptas de contraste em um eixo, tipicamente o horizontal, para 
-localizar placas. Este algorítimo pode operar em uma a cada N linhas da 
-imagem, sendo muito econômico em tempo de CPU,
-porém é simplista demais para operar em vários cenários. Processamento 
-estatístico de bordas pode ser usado focando nas letras para operar bem quando 
-o contorno da placa não é claro. Uma abordagem hierárquica foi proposta usando
-\emph{quadtrees}.
-Cada quadrante é dividido em \emph{quadtrees} se tiver bastante 
-variação de contraste. Segmentos contíguos são agrupados se o brilho deles for 
-muito diferente ou muito próximo. Cada segmento recebe um escore pelo seu
-tamanho e pelo escore dos blocos que o compõe. Os melhores 
-\emph{strips} são selecionados. Este algoritmo é bastante robusto a condições 
-de iluminação e tem boa taxa de acertos. Uso de janela deslisante, nas quais a 
-média e o desvio padrão são calculados e usados diretamente contra um limiar 
-também foram usados com sucesso. Transformada \emph{Wavelet} foi aplicada para 
-localizar placas, mas o método se mostrou muito sensível a variações de 
-distâncias e das características das lentes.
-
-Tentativas de uso de informações de cor foram realizadas para tirar vantagem
-dos padrões utilizadas nos diversos países, porém não se 
-mostravam estáveis em condições naturais de iluminação, pelo fato de que a 
-impressão das cores varia de acordo com a mesma. As tentativas envolvem 
-desde classificação \emph{pixel}-a-\emph{pixel} das cores até uso de lógica 
-\emph{fuzzy} e redes neurais, com taxas variadas de acerto, de 75\% a 98\%. 
-
-O uso de iluminação infravermelha foram demonstradas como sendo 
-capaz de produzir sistemas com taxa de acerto de 99.3\%. Baixo número de 
-\emph{pixels} foi demonstrado como tendo efeito negativo em todos os sistemas 
-testados.
-
-\cite{gilly2013survey} É um \emph{review} de 2013 das mesmas técnicas. Desta
-forma, é possível verificar como as técnicas evoluíram. Um método simples de
-janela deslisante com soma das 
-projeções verticais e horizontais foi utilizado com taxa de acerto de 96.7\%. 
-Componentes conectados continuam sendo utilizados. Lógica \emph{fuzzy} foi 
-utilizada com resultados que se mostraram sensíveis iluminação, cor e demandam 
-muito uso de CPU. Contagem de variações abruptas em um eixo continua sendo 
-utilizada.
-
-\section{Reconhecimento de Texto}
-
-Em \cite{sharma2012recent} é feito um \emph{survey} das técnicas recentemente 
-usadas para realizar reconhecimento de texto em vídeo. O processo é separado em 
-cinco etapas: seleção de \emph{frames} com texto (identifica-se um quadro do 
-vídeo tem ou não texto); detecção e localização de texto (duas etapas com um 
-nível de interdependência, localizam as regiões da imagem que tem texto); 
-extração e aprimoramento (envolve separar o texto em caracteres e aplicar 
-técnicas para melhorar a qualidade da imagem do caractere extraído, como, por 
-exemplo, binarização); e finalmente reconhecimento de caracteres.
-
-O \emph{survey} separa as técnicas usadas para detecção e localização em duas 
-categorias: baseadas em região e baseadas em textura. Na primeira são usadas 
-informações como cor, bordas e componentes conexos. Já as baseadas em textura 
-usam principalmente análise no domínio da frequência, em especial com 
-transformada \emph{Wavelet}.
-Para a etapa de detecção de texto, é proposta em \cite{minetto2013t} uma 
-variação do conjunto de características HOG(\emph{Histograms of Oriented
-Gradients}), denominada T-HOG(\emph{Text-HOG}). No conjunto de características 
-HOG, descrito em \cite{dalal2005histograms}, a imagem é dividida em células 
-de 8x8 \emph{pixels}, e estas células são agrupadas em blocos 2x2, com
-intersecção entre os blocos, de maneira que cada célula aparece quatro
-vezes no descritor final (exceto as 
-células da borda da imagem), é feita normalização de contraste local (apenas 
-dentro do bloco) e é calculado, para cada célula, um histograma dos gradientes, 
-agrupados por ângulo e ponderados pela magnitude. O descritor HOG é composto 
-por estes histogramas. Já o T-HOG divide a imagem verticalmente em N células 
-(N = 3 traz resultados satisfatórios, resultados não melhoram muito para 
-valores maiores que 7) e não agrupa em blocos.
+TODO
 
 \section{Uso de GPU para Extração de Características}
 
 Em \cite{ready2007gpu} foram comparadas uma implementação baseada em CPU e
-uma baseada em GPU(\emph{Graphical Processing Unit} de um algorítmo
+uma baseada em GPU(\emph{Graphical Processing Unit}) de um algorítmo
 de extração de características.
 Os autores comparam a performance do código em uma CPU 
 Pentium IV, 3.2GHz com uma GPU Quadro NVS 285. Os resultados demonstram que a 

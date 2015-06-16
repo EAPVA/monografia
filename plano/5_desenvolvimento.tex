@@ -1,10 +1,8 @@
 \chapter{Desenvolvimento}
 
-\section{Estudos}
+\section{Ferramentas utilizadas}
 
-\section{Considerações}
-
-\section{Kit de desenvolvimento Jetson TK1}
+\subsection{Kit de desenvolvimento Jetson TK1}
 
 A placa embarcada Jetson TK1, produzida pela NVidia, foi escolhida para o
 projeto devido ao seu poder de processamento, baixo consumo e custo de \$192,
@@ -24,6 +22,14 @@ memória é grande o suficiente para nos permitir trabalhar com imagem e vídeo.
 Juntamente com a placa, utilizamos o ambiente de desenvolvimento da NVidia,
 maisespecificadamente, uma versão modificada do Eclipse que nos permite
 codificar qualquer tipo de aplicação para a placa e para GPUs.
+
+\section{OpenCV}
+
+OpenCV é uma biblioteca de código-aberto para aplicações de processamento de
+imagem. A biblioteca é disponibilizada gratuitamente e recebe suporte por parte
+de sua comunidade. OpenCV possui uma versão dedicada para aplicações em GPU e
+também a NVidia disponibiliza otimizações especifícas para o processador Tegra
+K1.
 
 %A programação em uma GPU difere da programação em uma CPU em diversos aspectos
 %como, por exemplo, a GPU executa múltiplos kernels em paralelo e tem um acesso
