@@ -1,16 +1,17 @@
 \chapter{CUDA: Arquitetura e Programação}\label{cap:recursos}
 
-CUDA é uma arquitetura de hardware e software, desenvolvida pela NVidia, que permite
-programar uma GPU para executar código de aplicações gerais e escrita em linguagens
-de programação de alto nível.
+CUDA, \emph{Compute Unified Device Architecture}, é uma arquitetura de hardware 
+e software, desenvolvida pela NVidia, que permite
+programar uma GPU para executar código de aplicações gerais escrita em linguagens
+de programação de alto nível.%\ref{http://www.nvidia.com.br/object/cuda_home_new_br.html}
 
 CUDA nasceu como uma solução para os problemas do modelo GPGPU, onde a API gráfica
 era utilizada para computação de propósito geral. No modelo GPGPU, o programador 
 deveria ter um grande conhecimento sobre o funcionamento da GPU e da API gráfica.
 Os problemas tinham que ser descritos como coordenadas de vértices, texturas e
 \emph{shaders}, o que aumentava sua complexidade. Por último, GPUs não tinham
-suporte a características básicas de programação e a falta de suporte a variáveis
-de ponto flutuante de dupla precisão, restringia os modelos de programação que 
+suporte a características básicas de programação, e a falta de suporte a variáveis
+de ponto flutuante de dupla precisão restringia os modelos de programação que 
 poderiam ser utilizados.
   
 
@@ -18,61 +19,65 @@ poderiam ser utilizados.
 
 Uma Graphics Processor Unit (GPU) é uma arquitetura computacional que possui
 centenas de processadores, otimizados para executarem de forma paralela.
-GPUs foram criadas originalmente na década de 70 para acelerar o desenho de gráficos 
-de jogos eletrônicos. Desde então, as GPUs tem aumentado sua capacidade de 
-processamento devido à demanda por gráficos melhores. 
+Na década de 70, chips dedicados para acelerar o desenho de gráficos 
+eram utilizados em placas-mãe de jogos de fliperama. Desde então, esses chips
+evoluíram drasticamente suas funções e capacidade de processamento devido à demanda
+por gráficos melhores, eventualmente criando as GPUs que conheçemos atualmente.
 
 Em 1986, a Texas Instruments lançou o primeiro microprocessador com uma GPU 
 capaz de executar código para aplicações gerais. Porém, apenas em 2001, se tornou mais prático 
 utilizar GPUs para aplicações de uso geral.  
 
-Atualmente, uma GPU pode ser encontrada em computadores pessoais, laptops,
-celulares e até mesmo em placas embarcadas. Uma GPU Discreta, usualmente as mais
-avançadas, possui uma memória RAM própria e muito mais núcleos. 
-No entanto, a GPU discreta também é mais cara, sendo comumente utilizada
-para aplicações gráficas e jogos eletrônicos. A GPU Integrada vem junto a CPU 
-na mesma pastilha, essa chamada de GPU Integrada, utiliza parte da memória 
-RAM do sistema,no entanto, são muito menos potentes do que as discretas.
+Atualmente, GPUs podem ser encontrada em computadores pessoais, laptops,
+celulares e até mesmo em placas embarcadas. Uma GPU Discreta possui uma memória 
+RAM própria e uma quantidade maior de núcleos se comparada com outros tipos de GPUs. 
+No entanto, as GPUs discretas também são mais caras, sendo comumente utilizadas
+para aplicações gráficas e jogos eletrônicos. As GPUs Integradas são encontradas
+junto a CPU na mesma pastilha e utilizam parte da memória RAM do sistema
+e não possuem tantos núcleos quanto GPUs discretas, portanto possuem menor
+capacidade computacional. 
 
 \section{Arquitetura}
 
 A arquitetura CUDA foi desenvolvida pela NVidia com o objetivo de permitir que
-uma GPU fosse programável para aplicações de uso geral e utilizando código 
+uma GPU fosse programável para aplicações de uso geral, utilizando código 
 escrito em linguagens de programação de alto nível. 
 
 Um núcleo CUDA é, essencialmente, um conjunto de processadores otimizados para tarefas paralelizáveis
 e também podem ser programados para aplicações gerais. Esses núcelos seguem o paradigma 
-SIMD (Single Instruction, Multiple Data), ondeum grupo de processadores executam
-a mesma instrução, de forma paralela, porém cada processador é encarregado
+SIMD (Single Instruction, Multiple Data), onde um grupo de processadores executam
+a mesma instrução de forma paralela, porém cada processador é encarregado
 de um pacote de dados diferente. 
 
-GPUs utilizam a arquitetura SIMD (Single Instruction, Multiple Data), onde 
+GPUs utilizam a arquitetura SIMD (Single Instruction, Multiple Data), na qual 
 a mesma instrução é executada em diferentes dados. 
 
 
 \section{Programação}
 
-CUDA, uma \emph{framework} desenvolvida pela NVidia, permite que utilizemos uma
-GPU para processamento de propósito geral, também conhecida como GPGPU. O
-objetivo é que aplicações possam utilizar a arquitetura paralela e da velocidade
-fornecidas poruma GPU para fins além de aplicações gráficas.
+CUDA, uma \emph{framework} desenvolvida pela NVidia, permite que se utilize uma
+GPU para processamento de propósito geral, também conhecido como GPGPU
+(\emph{General-purpose computing on graphics processing units}). O
+objetivo é que aplicações possam utilizar a arquitetura paralela e velocidade
+fornecidas por uma GPU para fins além de aplicações gráficas.
 
-A API nos permite organizar as threads em blocos e criar conjuntos de
+A API permite organizar as threads, linhas de execução de programa que desenvolvem
+atividades de forma concorrente, em blocos e criar conjuntos de
 blocos chamados grids. É comum utilizarmos um número muito maior de blocos nos grids
-do que os fisicamente disponíveis na placa, portanto a API se encarrega de
+do que os fisicamente disponíveis na placa, então a API se encarrega de
 realizar o escalonamento automático das atividades entre os processadores e
 blocos fisicamente existentes. 
 
-Cada Thread e Bloco possui uma ID própria, sendo possivel utilizar essa informação para que cada Thread
+Cada thread e bloco possui uma ID própria, sendo possível utilizar essa informação para que cada thread
 trabalhe com um conjunto de dados únicos. A API permite também organizar as threads em blocos e grids de maneira 2D ou 3D,
 ficando o ID da Thread ou Bloco como uma tupla. Em processamento de imagens, as tarefas são usualmente realizadas em matrizes de duas 
 dimensões, portanto utilizar uma organização em 2D facilita a escrita de código, com cada Thread processando um pixel da imagem.
 
 Sendo possível programar e executar centenas de threads de forma única, também
-éprovável que existam milhares de erros e bugs à serem consertados. Como o
+é provável que existam milhares de erros e bugs à serem consertados. Como o
 programa principal e cada thread são executados de forma independente, não há
 uma falha ou aviso quando algo está errado. É necessário esperar que as threads
 terminem suas execuções e sincronizá-las com o programa para que possamos
 procurar o erro. A API possui funções que permitem extrair qual o último erro
-encontrado na execução e assim podemos debuggar nossas aplicações.
+encontrado na execução e assim podemos eliminar bugs de nossas aplicações.
 
