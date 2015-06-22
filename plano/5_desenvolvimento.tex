@@ -1,4 +1,13 @@
-\chapter{Desenvolvimento}
+\chapter{Implementação do HOG}
+
+Foi decidido realizar a implementação do HOG como uma biblioteca, de maneira a 
+facilitar a utilização em projetos futuros. Foram inclusas na biblioteca uma
+implementação em GPU e outra em CPU, com uma interface comum.
+
+No restante deste capítulo primeiramente serão apresentadas as ferramentas de
+\emph{software} e \emph{hardware} utilizadas, seguido da apresentação da
+organização da biblioteca. Após isso, uma documentação breve de cada um
+dos módulos e finalmente uma descrição detalhada da implementação em GPU.
 
 \section{Ferramentas utilizadas}
 
@@ -19,17 +28,50 @@ CPU e a GPU, não sendo necessário copiar os dados entre as partes, diferente de
 uma GPU discreta que possui sua própria memória dedicada separada da CPU. A
 memória é grande o suficiente para nos permitir trabalhar com imagem e vídeo.
 
-Juntamente com a placa, utilizamos o ambiente de desenvolvimento da NVidia,
+Juntamente com a placa, foi utilizado o ambiente de desenvolvimento da NVidia,
 maisespecificadamente, uma versão modificada do Eclipse que nos permite
 codificar qualquer tipo de aplicação para a placa e para GPUs.
 
-\section{OpenCV}
+\subsection{OpenCV}
 
-OpenCV é uma biblioteca de código-aberto para aplicações de processamento de
+OpenCV\footnote{http://opencv.org} é uma biblioteca de código-aberto para aplicações 
+  de processamento de
 imagem. A biblioteca é disponibilizada gratuitamente e recebe suporte por parte
-de sua comunidade. OpenCV possui uma versão dedicada para aplicações em GPU e
-também a NVidia disponibiliza otimizações especifícas para o processador Tegra
-K1.
+de sua comunidade. Ela possui um módulo com algumas funcionalidades
+implementadas para aplicações em GPU e
+a NVidia disponibiliza uma versão compilada com otimizações especifícas para o 
+processador Tegra K1, como parte do \emph{framework} CUDA.
+
+Foi utilizada a versão 2.4.9 da biblioteca para desenvolvimento e a versão
+otimizada da NVidia para execução na placa.
+
+\subsection{TinyXML-2}
+
+Para realizar a permanência de configuração do sistema, foi utilizada a
+biblioteca TinyXML-2\footnote{http://grinninglizard.com/tinyxml2}, inclusa como
+dois arquivos-fonte no projeto.
+
+\subsection{Boost}
+
+Alguns detalhes de implementação foram supridos pelo uso de algumas bibliotecas
+do conjunto de bibliotecas Boost\footnote{http://boost.org}. Mais
+especificamente, foram usadas as bibliotecas \emph{thread}, \emph{chrono},
+  \emph{random} e \emph{filesystem} para, respectivamente, fazer chamadas
+  assíncronas de função, medir o tempo de execução de trechos de código,
+  geração eficiente de números aleatórios e automatização de acesso aos
+  arquivos do sistema para realização dos testes.
+
+\subsection{GitHub}
+
+Foi utilizada a plataforma GitHub para realizar o versionamento de código do
+projeto. A biblioteca pode ser encontrada em: 
+<https://github.com/EAPVA/GHoGLib>, o código usado para testes em
+<https://github.com/EAPVA/GHoGLib_Tests> e um código de exemplo utilizando a
+biblioteca em <https://github.com/EAPVA/GHoGLib_Example>.
+
+\section{Organização da biblioteca}
+
+TODO
 
 %A programação em uma GPU difere da programação em uma CPU em diversos aspectos
 %como, por exemplo, a GPU executa múltiplos kernels em paralelo e tem um acesso

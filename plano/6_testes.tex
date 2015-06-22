@@ -1,18 +1,40 @@
-\chapter{Testes}
+\chapter{Avaliação experimental}
 
 Foram planejadas duas baterias de testes. A primeira comparando o desempenho de
-tempo de execução do código
-escrito para GPU, o código escrito para CPU, a implementção disponível no
+tempo de execuçãoo do código
+escrito para GPU, o código escrito para CPU, a implementação disponível no
 OpenCV para CPU e a implementação do OpenCV para GPU.
 
 Para garantir a confiabilidade da solução utilizando GPU, também foi criada uma
 bateria de testes comparando o resultado obtido na CPU e na GPU.
 
+Todos os testes foram realizados duas vezes, uma sem utilizar otimizações do
+compilador, outra passando o parâmetro $-O3$ para o compilador \emph{nvcc}.
+
 \section{Testes de desempenho de tempo de execução}
+
+Cada teste de desempenho de tempo consiste em, para uma das implementações 
+testadas, carregar uma imagem em alta resolução na memória, escolher
+aleatoriamente $1000$ janelas quadradas de tamanho fixo da imagem, medir e 
+armazenar
+o tempo gasto para executar a implementação em cada uma das janelas e
+finalmente calcular a média, desvio padrão, máximo e mínimo dos valores
+medidos.
+
+Esse teste foi executado para cada uma das quatro implementações,
+     com vários tamanhos de janela, de maneira a medir a
+escalabilidade de cada uma.
 
 \subsection{Resultados}
 
 \section{Testes de comparação de resultado entre CPU e GPU}
+
+Para comparar as duas implementações, um banco de imagens com $1000$ arquivos 
+foi montado, cada implementação foi executada em cada uma das imagens e foi
+calculado, entre os dois vetores resultantes, a média, desvio padrão, máximo e
+mínimo de erro entre cada componente correspondente, além da distância 
+euclidiana entre os dois vetores. Após isso, a média, desvio padrâo, máximo e
+mínimo dos resultados das $1000$ imagens foi calculado.
 
 \subsection{Resultados}
 
