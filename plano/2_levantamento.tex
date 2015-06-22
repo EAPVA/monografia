@@ -4,26 +4,33 @@
 
 TODO
 
-\section{Uso de GPU para Extração de descritores de Características}
+\section{Uso de GPU para Aplicações Gerais}
+
+TODO. Irei adaptar o texto do cap 4 para preencher aqui. 
+
+\section{Uso de GPU para Extração de Características}
 
 Em \cite{ready2007gpu} foram comparadas uma implementação baseada em CPU e
-uma baseada em GPU(\emph{Graphical Processing Unit}) de um algorítmo
-de extração de características.
+uma baseada em GPU(\emph{Graphical Processing Unit}) de um algoritmo
+de rastreamento de características. Esse algoritmo recebe uma imagem da 
+característica que deve ser encontrada e faz uma busca exaustiva na imagem,
+comparando qual bloco da imagem possui uma semelhança maior com a característica
+desejada. 
 Os autores comparam a performance do código em uma CPU 
 Pentium IV, 3.2GHz com uma GPU Quadro NVS 285. Os resultados demonstram que a 
 CPU, com uso de 90\% da sua capacidade, consegue 
-seguir 40 características em tempo real enquanto que a GPU consegue seguir até 
-500 características em tempo real. 
+detectar e acompanhar 40 características em um vídeo em tempo real enquanto que 
+a GPU consegue seguir até 500 características em tempo real. 
 
-Em \cite{park2008low} é feita uma comparação da performance de um algoritmo de 
-detecção de bordas em tempo real sendo executado em uma CPU e em duas GPUs. A 
-CPU utilizada foi uma 2.4 GHz Intel Core 2 e as GPUs utilizadas 
-foram 8800GTS-512 e uma placa de vídeo \emph{onboard} 8600MGT do Apple 
-MacBookPro. Tanto a implementação na CPU como na GPU, utilizaram os mesmos 
-parâmetros e estrutura para que as comparações sejam as mais corretas 
-possíveis. Os resultados demonstram que a GPU \emph{onboard} obteve uma 
-performance 3.15 vezes melhor do que a CPU. A segunda GPU
-obteve uma performance 22.96 vezes melhor do que a CPU. Os autores demonstram
+Em \cite{park2008low} é feita uma comparação do desempenho de velocidade do algoritmo de 
+detecção de bordas de Canny aplicado em conjunto com o algoritmo \emph{Vector Coherence Mapping},
+utilizado para detecçao de movimentos em vídeos. Os algoritmos foram executados 
+em uma CPU, 2.4 GHz Intel Core 2,  e as duas GPUs, 8800GTS-512 e uma placa de vídeo
+\emph{onboard} 8600MGT do Apple MacBookPro. Tanto a implementação na CPU como 
+na GPU, utilizaram os mesmos parâmetros e estrutura para que as comparações 
+sejam as mais corretas possíveis. Os resultados demonstram que a GPU \emph{onboard}
+ obteve uma velocidade de execução 3.15 vezes melhor do que a CPU. A segunda GPU
+obteve uma velocidade de execução 22.96 vezes melhor do que a CPU. Os autores demonstram
 com os resultados que é possível conseguir ganhos de performance significativos
 ao se utilizar uma GPU para algoritmos pesados, contanto que o código seja 
 propriamente otimizado para tirar proveito da arquitetura de uma GPU.
