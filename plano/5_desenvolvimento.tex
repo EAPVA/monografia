@@ -122,7 +122,9 @@ métodos assíncronos:
   indentificados em uma imagem. Para ser usado em trabalhos futuros.
 \end{itemize}
 
-\subsection{Constantes}
+\section{Descrição da biblioteca}
+
+\subsection{Enumerações}
 
 \subsubsection{GHOG\_LIB\_STATUS}
 
@@ -133,14 +135,154 @@ Define os códigos de erro usados na biblioteca.
   \item \textbf{GHOG\_LIB\_STATUS\_UNKNOWN\_ERROR} - Um erro desconhecido ocorreu.
 \end{itemize}
 
-\subsection{HogDescriptor}
+\subsection{Classes}
 
-A classe HogDescriptor possui uma interface com os seguintes métodos públicos:
+\subsubsection{HogDescriptor}
 
-\subsection{Settings}
+Uma das classes principais do sistema, fornece as funcionalidades usadas para o
+cálculo do descritor, permite configurar o algoritmo, e fornece algumas funções
+para facilitar as tarefas de classificação e descrição, caso seja fornecido um
+classificador. A classe HogGPU é subclasse desta, sobrescrevendo apenas os 
+métodos que usam a GPU, de maneira a evitar duplicação de código.
 
-\subsection{Utils}
+A seguir uma breve descrição de cada um dos métodos públicos da classe.
 
-\subsection{IClassifier}
+\vspace{7mm}
 
+\lstinputlisting[language=C++, firstline=29, lastline=31, style=customc]
+  {ghogsrc/HogDescriptor.h}
+
+Reserva uma região de memória para ser usada pela biblioteca. Não possui muita
+utilidade para a implementação em CPU.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=33, lastline=36, style=customc]
+  {ghogsrc/HogDescriptor.h}
+
+Versões assíncrona e síncrona para realizar a normalização da imagem.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=38, lastline=45, style=customc]
+  {ghogsrc/HogDescriptor.h}
+
+Versões assíncrona e síncrona para calcular a magnitude e a
+orientação de gradiente da imagem.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=47, lastline=54, style=customc]
+  {ghogsrc/HogDescriptor.h}
+
+Versões assíncrona e síncrona para obter o descritor a partir dos
+gradientes.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=56, lastline=59, style=customc]
+  {ghogsrc/HogDescriptor.h}
+
+Versões assíncrona e síncrona para realizar a classificação de uma
+imagem. Chama os três métodos acima (normalização, cálculo de gradientes e
+                                     cálculo do descritor), passando o
+resultado para o classificador. 
+Requer que um classificador tenha sido passado para a classe e treinado.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=61, lastline=70, style=customc]
+  {ghogsrc/HogDescriptor.h}
+
+Versões assíncrona e síncrona para localizar objetos de interesse em uma
+imagem. Não implementado no momento.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=72, lastline=72, style=customc]
+  {ghogsrc/HogDescriptor.h}
+
+Carrega configurações a partir de um arquivo XML.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=74, lastline=74, style=customc]
+  {ghogsrc/HogDescriptor.h}
+
+Muda o classificador utilizado.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=76, lastline=78, style=customc]
+  {ghogsrc/HogDescriptor.h}
+
+Respectivamente modifica e lê configurações da biblioteca.
+
+\subsubsection{HogGPU}
+
+TODO
+
+\subsubsection{HogGPU\_impl}
+
+TODO
+
+\subsubsection{Settings}
+
+Possui métodos para ler e escrever parâmetros de ocnfiguração do sistema em um
+arquivo XML, usando a biblioteca TinyXML para isso.
+
+\subsubsection{Utils}
+
+Criada para conter funções estáticas de utilidade para o sistema. No momento só
+possui um método, para fazer divisões entre números com duas dimensões:
+
+\lstinputlisting[language=C++, firstline=25, lastline=26, style=customc]
+  {ghogsrc/Utils.h}
+
+O resultado dessa operação é $\left({{a_1} \over {a_2}}, {{b_1} \over
+                                    {b_2}}\right)$,
+  sendo $(a_1, b_1)$ o numerador e $(a_2,b_2)$ o denominador.
+
+\subsubsection{IClassifier}
+
+Uma interface para uma classe capaz de realizar a tarefa de classificação de um
+descritor de características. Define duas classes de \emph{callback}, para
+serem usadas em métodos assíncronos:
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=22, lastline=35, style=customc]
+  {ghogsrc/IClassifier.h}
+
+\vspace{7mm}
+
+Além disso, define os seguintes métodos:
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=44, lastline=48, style=customc]
+  {ghogsrc/IClassifier.h}
+
+  Versão assíncrona e síncrona para realizar o treinamento. O parâmetro 
+  \emph{train\_data} é uma matriz onde cada linha representa a entrada de uma
+  instância de treinamento e o parâmetro \emph{expected\_outputs} é um vetor
+  com cada elemento sendo a saída esperada correspondente a uma das entradas.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=50, lastline=52, style=customc]
+  {ghogsrc/IClassifier.h}
+
+Versão assíncrona e síncrona para realizar a classificação. O parâmetro
+\emph{input} é um vetor contendo o descritor a ser classificado e a função
+retorna um vetor resultante, para o caso de classificadores que retornam um
+resultado multidimensional (como, por exemplo, redes neurais).
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=54, lastline=59, style=customc]
+  {ghogsrc/IClassifier.h}
+
+Métodos para fazer a permanência de configuração e do treinamento do
+classificador.
 
