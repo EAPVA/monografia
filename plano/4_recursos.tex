@@ -17,34 +17,101 @@ poderiam ser utilizados.
 
 \section{GPU}
 
-Uma Graphics Processor Unit (GPU) é uma arquitetura computacional que possui
-centenas de processadores, otimizados para executarem de forma paralela.
+Uma Graphics Processor Unit (GPU) é uma arquitetura computacional especializada 
+para tarefas com alta demanda computacional e altamente paralelizáveis, devido ao
+fato que GPUs possuem centenas de processadores, otimizados para executarem 
+tarefas de forma paralela.
+
 Na década de 70, chips dedicados para acelerar o desenho de gráficos 
 eram utilizados em placas-mãe de jogos de fliperama. Desde então, esses chips
 evoluíram drasticamente suas funções e capacidade de processamento devido à demanda
-por gráficos melhores, eventualmente criando as GPUs que conheçemos atualmente.
-
+por gráficos 3D em tempo real, eventualmente tornando-se as GPUs que conheçemos atualmente.
 Em 1986, a Texas Instruments lançou o primeiro microprocessador com uma GPU 
 capaz de executar código para aplicações gerais. Porém, apenas em 2001, se tornou mais prático 
 utilizar GPUs para aplicações de uso geral.  
 
 Atualmente, GPUs podem ser encontrada em computadores pessoais, laptops,
-celulares e até mesmo em placas embarcadas. Uma GPU Discreta possui uma memória 
-RAM própria e uma quantidade maior de núcleos se comparada com outros tipos de GPUs. 
+celulares e até mesmo em placas embarcadas. Uma GPU discreta possui uma memória 
+RAM própria e uma quantidade maior de núcleos se comparada com GPUs integradas. 
 No entanto, as GPUs discretas também são mais caras, sendo comumente utilizadas
-para aplicações gráficas e jogos eletrônicos. As GPUs Integradas são encontradas
+para aplicações gráficas e jogos eletrônicos. As GPUs integradas são encontradas
 junto a CPU na mesma pastilha e utilizam parte da memória RAM do sistema
 e não possuem tantos núcleos quanto GPUs discretas, portanto possuem menor
-capacidade computacional. 
+capacidade computacional e são mais baratas. 
+
+Uma GPU possui centenas de processadores especializados para operações paralelas e
+com uma alta densidade de transistores. O núcleo de uma GPU é dedicado à executar
+um conjunto de instruções único de maneira mais rápida possível, portanto sua 
+arquitetura é muito mais simples se comparada à uma CPU que pode receber centenas
+de conjuntos de instruções.
+
+%Figura CPU Style Cores x Slimming Down (GPU Cores)
+%Fonte http://haifux.org/lectures/267/Introduction-to-GPUs.pdf
+
+Os núcleos partilham diferentes tipos de espaços de memória e saber qual memória deve ser 
+utilizada é pivotal para um bom desempenho. Registradores e memória local são
+apenas visíveis para a linha de execução que escreve nessa memória e os dados duram
+enquanto essa linha de execução estiver ativa. A memória local é um pouco mais
+lenta do que os registradores.
+
+A memória compartilhada é visível por todas as linhas de execução presentes em um
+mesmo bloco, permitindo que essas linhas de execução comuniquem-se e troquem dados
+entre si. A memória global é visível por todas as linhas de execução da aplicação
+e pelo host e os dados são mantidos pela duração da alocação de memória feita
+pelo host. 
+
+Outros tipos de memória são a memória de texturas e a memória de constantes. 
+A memória de constantes guarda todas as contantes utilizadas pela aplicação,
+efetivamente servindo apenas para leitura após o inicío da execução. A memória
+de textura guarda informações de texturas e também é utilizada como uma memória
+apenas para leitura. Ambas são beneficas para tipos especificos de aplicações.
+
+%Figura Tipos de memória
+%Fonte https://www.microway.com/hpc-tech-tips/gpu-memory-types-performance-comparison/
+
+
+O funcionamento de uma GPU se resume a receber informações geométricas da CPU como
+entrada e emitir uma imagem como saída. O processo se iniciar com a interface com a host,
+onde a GPU irá receber os comandos da CPU e carregar as informações de geometria
+da memória. O resultado desse primeiro passo será um conjunto de vértices com
+informações associadas, como texturas, coordenadas, normais, entre outros.
+
+O conjunto de vértices resultante da comunicação com o host está em função do
+espaço do objeto, sendo necessário transformá-lo para ser exibido no espaço da tela
+do computador. Essa fase é chamada de processamento de vértices, onde todos os 
+dados recebidos na etapa anterior são modificados para serem exibidos na tela. 
+Nessa etapa não há a criação ou o descarte de vértices, portanto todos os vértices 
+recebidos da interface com o host são transformados.
+
+Após definir os locais dos vértices na tela, criam-se os triângulos que irão 
+preencher a tela. Antes de preencher a tela, triângulos fora do campo de visão 
+são rejeitados, sendo apenas utilizados os triângulos que irão compor os pixels
+da tela. Essa fase é chamada de configuração de triângulos. 
+
+Após inserir os triângulos na tela, toda informação de texturas, normais, posição,
+é utilizada para definir a cor final do pixel. Aqui são utilizadas técnicas como 
+operações matemáticas e mapeamento de texturas para colorir o pixel.Essa etapa é 
+chamada de processamento de pixels.
+
+Por último, a informação dos pixels é escrita para um framebuffer e a imagem
+final é demonstrada na tela. A última etapa é chamada interface de memória. 
+
+%Figura pipeline
 
 \section{Arquitetura}
 
-A arquitetura CUDA foi desenvolvida pela NVidia com o objetivo de permitir que
-uma GPU fosse programável para aplicações de uso geral, utilizando código 
-escrito em linguagens de programação de alto nível. 
+%ftp://download.nvidia.com/developer/cuda/seminar/TDCI_Arch.pdf
+%http://docs.nvidia.com/cuda/cuda-c-programming-guide/#axzz3dtAz2c5O
 
-Um núcleo CUDA é, essencialmente, um conjunto de processadores otimizados para tarefas paralelizáveis
-e também podem ser programados para aplicações gerais. Esses núcelos seguem o paradigma 
+A arquitetura CUDA foi desenvolvida pela NVidia com o objetivo de otimizar o uso de
+GPUs para aplicações de uso geral, utilizando código escrito em linguagens de 
+programação de alto nível. 
+
+Uma GPU consiste de centenas de processadores em paralelo, interligados por interfaces 
+de memória muito mais rápidas e complexas. 
+
+Um núcleo CUDA é um núcleo de GPU criado para ser programado para aplicações gerais. 
+Esses núcelos seguem o paradigma 
 SIMD (Single Instruction, Multiple Data), onde um grupo de processadores executam
 a mesma instrução de forma paralela, porém cada processador é encarregado
 de um pacote de dados diferente. 
