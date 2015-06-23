@@ -71,13 +71,76 @@ biblioteca em <https://github.com/EAPVA/GHoGLib\_Example>.
 
 \section{Organização da biblioteca}
 
-TODO
+A biblioteca possui as seguintes classes e interfaces:
 
-%A programação em uma GPU difere da programação em uma CPU em diversos aspectos
-%como, por exemplo, a GPU executa múltiplos kernels em paralelo e tem um acesso
-%especial à uma região separada de memória. Devido a sua arquitetura paralela,é
-%possível executar uma única tarefa com centenas de threads CUDA de maneira
-%independente, utilizando dados de entrada diferentes para cada uma dessas
-%threads. Portanto, caso seja possivel dividir uma tarefa grande em um
-%subconjunto de tarefas menores e independentes, a programaçao CUDA se
-%demonstra eficiente.
+\begin{itemize}
+  \item \textbf{HogDescriptor} - Implementação na CPU do HOG.
+  \item \textbf{HogGPU} - Implementação na GPU do HOG, é uma subclasse de
+  HogDescriptor.
+  \item \textbf{Settings} - Funcionalidade de permanência de parâmetros de
+  configuração.
+  \item \textbf{Utils} - Classe estática com métodos utilitários.
+  \item \textbf{IClassifier} - Interface para implementar um classificador.
+  Para ser utilizada em trabalhos futuros.
+\end{itemize}
+
+Além disso, a biblioteca possui dois \emph{headers} especiais:
+
+\begin{itemize}
+  \item \textbf{HogCallbacks.inc} - Possui métodos de \emph{callback}
+  para serem usados
+  nos métodos assíncronos.
+  \item \textbf{GHoGLibConstants.inc} - Contém constantes usadas no sistema.
+\end{itemize}
+
+A implementação da classe HogGPU está dividida em quatro arquivos:
+
+\begin{itemize}
+  \item \textbf{HogGPU.h} - Possui a definição da classe
+  \item \textbf{HogGPU.cu} - Possui a implementação da parte \emph{host} da
+  classe.
+  \item \textbf{HogGPU\_impl.cuh} - Define as funções \emph{kernel} usadas na
+  classe.
+  \item \textbf{HogGPU\_imph.cu} - Implementa as funções \emph{kernel} usadas.
+\end{itemize}
+
+\subsection{Hog Callbacks}
+
+Algumas classes de \emph{callback} são definidas para serem utilizadas em
+métodos assíncronos:
+
+\begin{itemize}
+  \item \textbf{ImageCallback} - Retorna uma image processada.
+  \item \textbf{GradientCallback} - Retorna duas matrizes, uma com as
+  magnitudes dos gradientes e outra com as orientações.
+  \item \textbf{DescriptorCallback} - Retorna um vetor conténdo o descritor
+  de características.
+  \item \textbf{ClassifyCallback} - Retorna o resultado de uma classificação
+  (se a região de uma imagem pertence ou não a uma classe.) Para ser usado em
+  trabalhos futuros.
+  \item \textbf{LocateCallback} - Retorna uma lista de retângulos de objetos
+  indentificados em uma imagem. Para ser usado em trabalhos futuros.
+\end{itemize}
+
+\subsection{Constantes}
+
+\subsubsection{GHOG\_LIB\_STATUS}
+
+Define os códigos de erro usados na biblioteca.
+
+\begin{itemize}
+  \item \textbf{GHOG\_LIB\_STATUS\_OK} - Nenhum erro ocorreu.
+  \item \textbf{GHOG\_LIB\_STATUS\_UNKNOWN\_ERROR} - Um erro desconhecido ocorreu.
+\end{itemize}
+
+\subsection{HogDescriptor}
+
+A classe HogDescriptor possui uma interface com os seguintes métodos públicos:
+
+\subsection{Settings}
+
+\subsection{Utils}
+
+\subsection{IClassifier}
+
+
