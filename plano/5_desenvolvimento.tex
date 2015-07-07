@@ -1,55 +1,56 @@
-\chapter{Implementação do HOG}
+\chapter{Organização da biblioteca}
 
-Foi decidido realizar a implementação do HOG como uma biblioteca, de maneira a 
-facilitar a utilização em projetos futuros. Foram inclusas na biblioteca uma
+O mpetodo HOG foi implementado em uma biblioteca, de maneira a 
+facilitar a utilização em projetos futuros. Foram incluídas na biblioteca uma
 implementação em GPU e outra em CPU, com uma interface comum.
 
 No restante deste capítulo primeiramente serão apresentadas as ferramentas de
-\emph{software} e \emph{hardware} utilizadas, seguido da apresentação da
-organização da biblioteca. Após isso, uma documentação breve de cada um
-dos módulos e finalmente uma descrição detalhada da implementação em GPU.
+\emph{software} e \emph{hardware} utilizadas, assim como a 
+organização da biblioteca. Após isso, o capítulo traz
+uma documentação breve de cada um
+dos módulos. 
 
 \section{Ferramentas utilizadas}
 
 \subsection{Kit de desenvolvimento Jetson TK1}
 
 A placa embarcada Jetson TK1, produzida pela NVidia, foi escolhida para o
-projeto devido ao seu poder de processamento, baixo consumo e custo de \$192,
-valor relativamente baixo se comparado com as alternativas disponíveis no
+projeto devido ao seu poder de processamento, baixo consumo e custo 
+relativamente baixo se comparado com as alternativas disponíveis no
 mercado.
 
 A placa utiliza o \sigla{SoC}{System on Chip}(\emph{System on Chip}) Tegra K1,
-um processador de 4 cores ARM Cortex A15 e possui uma GPU integrada com a
-arquitetura Kepler contendo 192 cores Cuda separados fisicamente em três blocos.
-Cada bloco tem sua própria cache que é compartilhada entre seus 64 cores e pode
-ser utilizada para sincronizar as threads em execução. A placa possui uma
-memória RAM de 2GB com largura de 64-bits, sendo ela compartilhada com entre a
+um processador de 4 núcleos ARM Cortex A15, e possui uma GPU integrada com a
+arquitetura Kepler contendo 192 cores CUDA separados fisicamente em três blocos.
+Cada bloco tem sua própria cache, que é compartilhada entre seus 64 cores e pode
+ser utilizada para sincronizar as \emph{threads} em execução. A placa possui uma
+memória RAM de 2GB com largura de 64 bits, sendo ela compartilhada entre a
 CPU e a GPU, não sendo necessário copiar os dados entre as partes, diferente de
 uma GPU discreta que possui sua própria memória dedicada separada da CPU. A
 memória é grande o suficiente para nos permitir trabalhar com imagem e vídeo.
 
-Juntamente com a placa, foi utilizado o ambiente de desenvolvimento da NVidia,
-maisespecificadamente, uma versão modificada do Eclipse que nos permite
-codificar qualquer tipo de aplicação para a placa e para GPUs.
+Juntamente com a placa, foi utilizado o ambiente de desenvolvimento NSight
+Eclipse Edition da NVidia, uma versão modificada do Eclipse, preparada para
+compliação de código CUDA.
 
 \subsection{OpenCV}
 
-OpenCV\footnote{http://opencv.org} é uma biblioteca de código-aberto para aplicações 
+OpenCV\footnote{http://opencv.org} é uma biblioteca de código aberto para aplicações 
   de processamento de
 imagem. A biblioteca é disponibilizada gratuitamente e recebe suporte por parte
 de sua comunidade. Ela possui um módulo com algumas funcionalidades
-implementadas para aplicações em GPU e
+implementadas para aplicações em GPU, e
 a NVidia disponibiliza uma versão compilada com otimizações especifícas para o 
 processador Tegra K1, como parte do \emph{framework} CUDA.
 
 Foi utilizada a versão 2.4.9 da biblioteca para desenvolvimento e a versão
-otimizada da NVidia para execução na placa.
+otimizada da NVidia para execução no processador Tegra K1.
 
 \subsection{TinyXML-2}
 
-Para realizar a permanência de configuração do sistema, foi utilizada a
-biblioteca TinyXML-2\footnote{http://grinninglizard.com/tinyxml2}, inclusa como
-dois arquivos-fonte no projeto.
+Para realizar a permanência de configuração do sistema, foi utilizada a 
+biblioteca TinyXML-2\footnote{http://grinninglizard.com/tinyxml2}, incluída
+como dois arquivos-fonte no projeto.
 
 \subsection{Boost}
 
@@ -124,6 +125,9 @@ métodos assíncronos:
 
 \section{Descrição da biblioteca}
 
+Foi dada preferência pela utilização de \emph{containers} do OpenCV, de maneira
+a facilitar a integração com o OpenCV em trabalhos futuros.
+
 \subsection{Enumerações}
 
 \subsubsection{GHOG\_LIB\_STATUS}
@@ -132,6 +136,8 @@ Define os códigos de erro usados na biblioteca.
 
 \begin{itemize}
   \item \textbf{GHOG\_LIB\_STATUS\_OK} - Nenhum erro ocorreu.
+  \item \textbf{GHOG\_LIB\_STATUS\_INVALID\_PARAMETER\_NAME} - Foi realizada a
+  leitura ou gravação de um parâmetro inexistente.
   \item \textbf{GHOG\_LIB\_STATUS\_UNKNOWN\_ERROR} - Um erro desconhecido ocorreu.
 \end{itemize}
 
@@ -202,7 +208,9 @@ imagem. Não implementado no momento.
 \lstinputlisting[language=C++, firstline=72, lastline=72, style=customc]
   {ghogsrc/HogDescriptor.h}
 
-Carrega configurações a partir de um arquivo XML.
+Carrega configurações a partir de um arquivo \sigla{XML}{Extensible Markup
+  Language}(\emph{Extensible Markup Language} - Linguagem de marcação
+            extendível).
 
 \vspace{7mm}
 
@@ -220,11 +228,64 @@ Respectivamente modifica e lê configurações da biblioteca.
 
 \subsubsection{HogGPU}
 
-TODO
+A classe reimplementa alguns métodos da HogDescriptor. Detalhes sobre a
+implementação são discutidas no próximo capítulo.
 
-\subsubsection{HogGPU\_impl}
+\vspace{7mm}
 
-TODO
+\lstinputlisting[language=C++, firstline=29, lastline=31, style=customc]
+  {ghogsrc/HogGPU.h}
+
+Reserva uma região de memória compartilhada entre a GPU e a CPU.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=33, lastline=51, style=customc]
+  {ghogsrc/HogGPU.h}
+
+Reimplementação das funções de normalização, cálculo de gradientes e geração
+dos descritores. Chamam funções \emph{kernel} implementadas no arquivo
+HogHPU\_impl.cu.
+
+\subsubsection{HogGPU\_impl.cu}
+
+Nesse arquivo estão implementados os métodos \emph{kernel} chamados pela 
+classe HogGPU.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=11, lastline=14, style=customc]
+  {ghogsrc/HogGPU_impl.cuh}
+
+Cada bloco de \emph{threads} calcula a normalização de até $64$
+\emph{pixels} de uma linha da imagem de entrada.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=16, lastline=23, style=customc]
+  {ghogsrc/HogGPU_impl.cuh}
+
+Cada bloco de \emph{threads} calcula o gradiente de maior magnitude de
+até $64$ \emph{pixels} de uma linha da imagem de entrada.
+
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=25, lastline=35, style=customc]
+  {ghogsrc/HogGPU_impl.cuh}
+
+Cada bloco de \emph{threads} calcula, para $64$ \emph{pixels} de uma linha da 
+imagem de entrada, a soma parcial dos histogramas correspondentes a esses
+\emph{pixels}. Essa divisão foi feita dessa maneira para otimizar o acesso à
+memória global.
+  
+\vspace{7mm}
+
+\lstinputlisting[language=C++, firstline=11, lastline=14, style=customc]
+  {ghogsrc/HogGPU_impl.cuh}
+
+Cada bloco de \emph{threads} realiza o agrupamento e normalização de até 8
+blocos do descritor, em uma linha de blocos (ou seja, ele não pega mais do que
+                                             uma linha de blocos da malha).
 
 \subsubsection{Settings}
 

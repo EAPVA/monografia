@@ -1,0 +1,119 @@
+\chapter{Implementação do HOG em GPU}
+
+Neste capítulo será detalhada a implementação e invocação de cada um dos quatro
+\emph{kernels} utilizados para o cálculo do descritor HOG.
+
+Cada \emph{kernel} foi projetado considerando blocos de \emph{threads} de 
+tamanho fixo, procurando realizar acesso coalescido da memória e 
+        uso de memória compartilhada para acesso a dados gerados por outras
+        \emph{threads}. Para a divisão do problema em blocos foi aplicada uma
+        técnica comumente utilizada em programação CUDA, onde se fixa o tamanho 
+        do bloco de \emph{threads} e se calcula o tamanho do \emph{grid} a
+        partir do tamanho do bloco e do tamanho da entrada. Foram usados blocos
+        com uma, duas ou três dimensões conforme apropriado para a abstração da
+        organização do problema e exclusivamente \emph{grids} de duas
+        dimensões. Para exemplificar o cálculo do tamanho do \emph{grid}, será
+        usado um tamanho de entrada de $1280 \times 720$ \emph{pixels}
+
+\section{Normalização da imagem}
+
+Este é o \emph{kernel} mais simples. Cada linha da imagem é particionada em
+grupos de até $64$ \emph{pixels}, cada um alocado para um bloco de
+\emph{threads} diferente. Cada bloco tem tamanho $(3,64)$, com o \emph{id} da
+primeira dimensão indicando o canal de cor e o \emph{id} da segunda dimensão
+indicando o \emph{pixel} no qual a \emph{thread} irá operar (relativo ao começo
+do grupo de \emph{pixels} do bloco. O \emph{id} do bloco indica a linha e o
+grupo em qual o bloco irá operar. Cada \emph{thread} calcula a raiz quadrada do
+valor de entrada.
+
+Para uma entrada de $1280 \times 720$ é necessário um \emph{grid} de $20 \times
+720$ blocos para completar o processo.
+
+\section{Cálculo dos gradientes}
+
+Neste \emph{kernel}, novamente, o tamanho do bloco de \emph{threads} é $(3,64)$,
+com a primeira dimensão representando canal de cor e a segunda a posição
+relativa do \emph{pixel}. 
+
+A execução de um bloco ocorre em duas etapas. Na
+primeira etapa cada \emph{thread} calcula a magnitude e a fase do canal de cor
+do \emph{pixel} correspondente, armazenando a resposta na memória
+compartilhada. Após todas as \emph{threads} fazerem isso, as \emph{threads} com
+\emph{id} na primeira dimensão igual a zero verificam qual a maior magnitude
+entre os três canais de cor do seu \emph{pixel} e armazenam o
+gradiente correspondente.
+
+Para armazenar os valores das magnitudes e orientações dos gradientes, cada
+bloco precisa de $2$ \emph{buffers} $\times$ $64$ \emph{pixels} $\times$ $3$
+\emph{canais de cor} $\times$ $4$ \emph{bytes por float} = 1536 \emph{bytes} =
+1.5Kb de memória compartilhada por bloco.
+
+Novamente, para uma entrada de $1280 \times 720$ é necessário um \emph{grid} de 
+$20 \times 720$ blocos para completar o processo.
+
+\section{Cálculo dos histogramas}
+
+Os \emph{buffers} da magnitude e orientação do gradiente são particionados em
+grupos de $64$ elementos, resultando num bloco de tamanho $64$. Cada bloco de
+\emph{threads} irá processar a soma parcial de todos os seus elementos nos
+histogramas correspondentes e cada \emph{thread} em um gradiente.
+
+A execução de um ocorre em três etapas. Na primeira cada \emph{thread}
+calcula em quais classes do histograma o gradiente será dividido, e quanto será
+adicionado em cada classe. Todos esses resultados são armazenados em
+\emph{buffers} na memória compartilhada.
+
+Após todas as \emph{threads} terminarem a primeira etapa, as primeiras $n$
+\emph{threads} são selecionadas para fazer a soma parcial dos histogramas, de
+maneira a não causar conflitos de gravação ou leitura. Esta é a parte mais
+lenta da implementação, por dois motivos: o número de \emph{threads} ativas é
+muito reduzido e o acesso a memória é irregular. O resultado dessa soma é
+armazenado num \emph{buffer} de tamanho \emph{número
+  de classes do histograma $\times$ número de células processadas}. O número de
+  células processadas é obtido dividindo 64 pela largura da célula.
+
+Quando a soma parcial é concluída o \emph{buffer} com as somas parciais é
+particionado entre as \emph{threads}, que chamam uma função \emph{thread-safe}
+para adicionar esses valores nas classes do histograma. Se existirem muitos
+conflitos de acesso existirá perda de desempenho.
+
+Considerando a largura da célula como 8 \emph{pixels} e 9 classes no
+histograma, são necessários, para armazenar os valores 
+usados internamente pelo bloco, 4
+\emph{buffers} $\times$ 64 \emph{elementos} $\times$ \emph{bytes por float} $+$
+${{64} \over {8}} \times 9$ = 1328 \emph{bytes} = 1.28Kb de memória
+compartilhada por bloco.
+
+Mais uma vez, para uma entrada de $1280 \times 720$ é necessário um \emph{grid}
+de $20 \times 720$ blocos para completar o processo.
+
+\section{Normalização em blocos}
+
+Para fazer a normalização é usado um bloco de \emph{threads} com dimensões 
+(\emph{número de
+ classes do histograma}, \emph{número de células por bloco do HOG}, 8). Para 9
+classes no histograma e 4 células por bloco do HOG, tem-se uma dimensão de bloco de
+\emph{threads} de $(9,4,8)$ \emph{threads}. A primeira dimensão indica qual é a
+classe onde a \emph{thread} vai operar, a segunda qual o histograma dentro do
+bloco do HOG e a terceira em qual bloco do HOG de um conjunto de 8 blocos a \emph{thread}
+irá operar.
+
+A execução de um bloco de \emph{threads} ocorre em três etapas. Primeiramente cada \emph{thread}
+carrega o valor de uma classe do histograma na memória compartilhada. Em seguida
+oito \emph{threads} são escolhidas para calcular a soma de todos os valores
+dentro de um bloco do HOG, armazenando o resultado em um \emph{buffer} na
+memória compartilhada. Finalmente, cada \emph{thread} calcula a normalização da
+classe que ele tinha previamente carregado na memória e armazena no descritor
+final.
+
+Para 4 células por bloco do HOG e 9 classes no histograma,
+     é necessário um \emph{buffer} na memória compartilhada com tamanho $9
+     \times 4 \times 8 + 8 = 296$ \emph{bytes} por bloco de \emph{threads}
+
+Considerando uma imagem de entrada de $1280 \times 720$, com o tamanho da célula sendo
+$8 \times 8$ \emph{pixels}, o tamanho do bloco sendo $2 \times 2$ células,
+  deslocando o bloco uma célula por vez e com 9 classes no histograma, serão
+  calculados $160 \times 90$ histogramas, agrupados em $159 \times 89$ blocos.
+  Para realizar a normalização dessa quantidade de blocos do HOG, é necessário
+  um \emph{grid} de $20 \times 89$ blocos de \emph{threads}.
+

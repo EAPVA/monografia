@@ -1,84 +1,60 @@
 \chapter{Introdução}\label{cap:introducao}
 
-\section{Contexto}
+O campo de visão computacional tem aplicações nas mais diversas áreas, como por
+exemplo
+automação de processos industriais, diagnóstico médico, preservação de
+documentos históricos, vigilância, identificação biométrica,
+digitalização automática de
+documentos, indexação de bancos de dados de imagens e controle e monitoração de 
+tráfego urbano. Com o desenvolvimento da área, ela se torna cada vez mais
+pervasiva no cotidiano.
 
-TODO:reescrever/remover?
+Técnicas de visão computacional tendem a ser
+computacionalmente pesadas, envolvendo a aplicação sequencial de diversas 
+operações sobre um grande volume de dados,
+especialmente considerando o processamento de vídeos de alta
+resolução. Essas técnicas também tendem a ser altamente
+paralelizáveis, por operarem de forma localizada nos dados, ou seja, uma
+operação em uma região da imagem é independente da imagem como um todo,
 
-\section{Objetivos}
+Com o aumento do poder de processamento de \sigla{GPU}{Graphical Processing
+  Unit}s (\emph{Graphical Processing Units} - unidades de processamento
+          gráfico), aliado ao desenvolvimento do uso 
+desse tipo de processador para aplicações de propósito geral, tem-se um 
+interesse em desenvolver sistemas de visão computacional utilizando GPUs, de
+forma a alcançar desempenho em tempo real em aplicações com vídeo de alta
+resolução. Em algumas aplicações também é interessante obter baixo consumo de
+potência, para a aplicação em sistemas embarcados.
 
-\noindent \textbf{Objetivo Geral}
+Uma tarefa muito comum em visão computacional é a obtenção de \emph{descritores
+  de características} de regiões da imagem, de maneira a reduzir a quantidade 
+  de dados a serem processados posteriormente e também generalizar informação,
+  de forma a aumentar a robustez do sistema à variações.
 
-Implementar o descritor de imagens HOG em CPU e GPU e comparar as
-implementações em tempo de execução e diferença de resultados.
-
-\noindent \textbf{Objetivos Específico}
-
-TODO
-
-\noindent \textbf{Escopo}
-
-TODO
-
-\section{Resultados}
-
-Utilizar uma GPU para realizar a extração pode trazer uma série de ganhos para
-o sistema:
-
-\subsection{Tecnológicos}
-
-\noindent \textbf{Melhor taxa de \emph{frames}}
-
-Se os algoritmos forem mais rápidos, torna-se possível analisar mais quadros 
-por segundo em um sistema de vídeo. No melhor caso, torna-se possível analizar
-o sistema em tempo real.
-
-\noindent \textbf{Imagens de maior Resolução}
-
-Uma câmera de 1080p possui, por quadro, cerca do dobro da quantidade de pixels 
-do uma câmera 720p. A aceleração via GPU pode viabilizar o uso de uma câmera de 
-maior resolução, o que resulta em maior nitidez e uma maior taxa de acertos ou, 
-em alguns casos, a substituição de duas câmeras por apenas uma de maior 
-resolução.
-
-%\subsection{Científicos}
-
-\subsection{Econômicos}
-
-\noindent \textbf{Redução de custo}
-
-TODO:escrever melhor esse item
-
-Dado um sistema que já atende aos requisitos da sua aplicação um sistema deste 
-pode rodar em um equipamento de menor custo, reduzindo o custo total da 
-solução.
-
-\noindent \textbf{Menor consumo de energia}
-
-Uma GPU integrada possui um consumo de energia muito baixo se comparado a um
-processador CPU comum.
-
-\noindent \textbf{Menor demanda de largura de banda}
-
-Eliminação da transmissão e processamento remoto do \emph{stream} de vídeo em 
-troca do processamento local e transmissão apenas de dados processados ou 
-sumarizados, conforme necessidades específicas.
-
-%\subsection{Sociais}
-
-%\subsection{Ambientais}
-
-%\section{Procedimentos metodológicos}
+Neste trabalho é apresentada uma implementação de um descritor de imagens
+baseado em distribuição de orientações de gradiente de imagem, o HOG
+(\emph{Histogram of Oriented Gradients} - histogramas de gradientes
+ orientados), em uma GPU de baixo custo e baixo consumo.
+A implementação foi feita como uma biblioteca, de maneira a
+facilitar a utilização em trabalhos posteriores. Foi obtida uma taxa de
+processamento superior a 20 quadros por segundo para imagens com resolução
+\emph{Full HD} ($1920 \times 1080$ \emph{pixels}). Foi feita uma comparação de
+desempenho com uma implementação pré-existente de referência (Implementação do
+HOG do OpenCV), executada no mesmo processador, conseguindo uma performance
+consideravelmente superior.
 
 \section{Apresentação do documento}
 
 O restante deste trabalho se organiza da seguinte forma. No capítulo 2
 é realizado um levantamento de trabalhos relacionados
-à extração de características utilizando GPUs. O capítulo 3 apresenta a
-teoria de processamento de imagens e do algoritmo utilizados no desenvolvimento 
+extração de características utilizando GPUs. O capítulo 3 apresenta a
+teoria de processamento de imagens e dos algoritmos utilizados no desenvolvimento 
 do trabalho, e o capítulo 4 a
 arquitetura da GPU e o modelo de programação utilizado para processamento
-paralelo nesta. No capítulo 5 se encontra um resumo do trabalho desenvolvido, 
-seguido de um relatório dos testes realizados no capítulo 6. 
+paralelo nesta. No capítulo 5 se encontra uma descrição da biblioteca
+implementada e no capítulo 6 é detalhada a implementação da GPU,
+seguido de um relatório dos testes realizados no capítulo 7. 
 Finalmente, encontram-se algumas considerações
-finais sobre o projeto, incluindo indicações de trabalhos futuros.
+finais sobre o projeto, incluindo indicações de trabalhos futuros, no capítulo
+8.
 

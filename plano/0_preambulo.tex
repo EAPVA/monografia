@@ -16,7 +16,7 @@
 \cita{LOPES, Marcelo T.} % sobrenome (maiusculas), nome do autor do trabalho
 
 \palavraschave{GPU, HOG, vis\~ao computacional, extração de características} %substituir pelas palavras-chave relacionadas ao seu tema de pesquisa
-\keywords{GPU, T-HOG, computer vision, feature extraction} % incluir palavras-chave em inglês
+\keywords{GPU, HOG, computer vision, feature extraction} % incluir palavras-chave em inglês
 
 \comentario{\UTFPRdocumentodata\ de Engenharia da Computa\c{c}\~ao, apresentado ao \UTFPRprogramadata\ da \ABNTinstituicaodata\ como requisito parcial para obten\c{c}\~ao do t\'itulo de ``\UTFPRtitulacaodata\ em Computa\c{c}\~ao''.} %\\ \'Area de Concentra\c{c}\~ao: \UTFPRareadata.}
 
@@ -55,64 +55,51 @@
 %\end{dedicatoria}
 
 % agradecimentos (opcional)
-%\begin{agradecimentos}
-% Texto dos agradecimentos.
-%\end{agradecimentos}
+\begin{agradecimentos}
+Agradeço ao professor orientador Dr. Bogdan Tomoyuki Nassu pelo apoio e
+incentivo em me fazer concluir esse trabalho, e por ser paciente e compreensivo
+com os meus atrasos.
+
+Agradeço também aos colegas de curso Lucas Campiolo Paiva, Francisco Delmar
+Kurpiel e Luis Guilherme Machado Camargo, por ajudas pontuais com a 
+implementação e com a monografia.
+\end{agradecimentos}
 
 % epigrafe (opcional)
-%\begin{epigrafe}
-%\end{epigrafe}
+\begin{epigrafe}
+"\emph{I love deadlines. I like the wooshing sound they make as they fly
+  by.}"
+  
+  Douglas Adams
+\end{epigrafe}
 
 %resumo
 \begin{resumo}
 
-TODO: Reescrever, fazer só em um parágrafo \\
-Deixar para mais tarde (quando o trabalho estiver mais concluído)
-Deve conter: \\
-Introdução \\
-Objetivos Gerais \\
-Método \\
-Desenvolvimento \\
-Resultados
-
-Esse projeto tem o objetivo de extrair a localização de placas de veículos de 
-um \emph{stream} de vídeo, utilizando um algoritmo originalmente desenvolvido
-para identificar se uma imagem é ou não texto.
- 
-Extração é uma das várias etapas necessárias para o processo de 
-reconhecimento autom\'atico de placas veículares. Em um \emph{stream} de vídeo, 
-extraímos, para cada \emph{frame}, a localização de qualquer n\'umero de placas 
-de ve\'iculos que possam ser encontradas. 
-
-Como o algoritmo utilizado para a extração \'e altamente paraleliz\'avel, pois 
-suas operações podem ser aplicadas de maneira independente em diversas 
-regi\~oes da imagem, propomos sua implementa\c{c}\~ao em uma 
-\sigla{GPU}{Graphical Processing Unit}.
-
-A implementação ser\'a 
-desenvolvida como uma biblioteca em \emph{C++} com o objetivo de ser utilizada 
-em um sistema completo de reconhecimento de placas. 
-
+Extração de descritores de características é uma tarefa fundamental para o
+processo de reconhecimento de padrões. Nesse projeto é apresentada uma 
+implementação em GPU de um descritor de características de imagem baseado na
+distribuição local de orientação de gradientes, o descritor
+\emph{Histograms of Oriented Gradients} (HOG), e esta implementação é
+comparada com implementações de referência pré-existentes em CPU e GPU, além de
+uma implementação em CPU desenvolvida para este trabalho. Foi obtida uma
+aceleração de 14,3 vezes em comparação com a implementação em CPU para imagens
+de resolução \emph{Full HD} ($1920 \times 1080$ \emph{pixels}) e um ganho de
+performance superior a 30\% em relação à implementação em GPU de referência.
 
 \end{resumo}
 
 %abstract
 \begin{abstract}
 
-This project aims to extract the location of license plates in a video stream,
-by using an algorithm originally designed to identify if an image is or isn't 
-text.
-
-Extraction is one of the necessary steps for Automatic License Plate
-Recognition. On a video stream we extract, for each frame, the location of any
-number of license plates that can be found.
-
-As the algorithm we're using for extraction is highly parallelizable, as it's
-operations can be applied independently on several regions of the image, we
-propose to implement it on a GPU.
-
-The implementation will be developed as a C++ library, in
-order for it to be used in a complete ALPR system.
+Feature extraction is fundamental to the process of pattern recognition. In
+this project a GPU implementation of an image feature descriptor based on local
+distribution of gradient orientation, the Histograms of Oriented Gradients
+(HOG) descriptor, and it is compared to pre-existing reference implementations
+in both CPU and GPU, together with a CPU implementation developed in this
+project. A speedup of 14,3, compared to the CPU implementation, is achieved for
+Full HD ($1920 \times 1080$ pixels) resolution images and a performance gain
+of over 30\%, compared to the reference GPU implementation.
 
 \end{abstract}
 

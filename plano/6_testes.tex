@@ -1,40 +1,563 @@
 \chapter{Avaliação experimental}
 
-Foram planejadas duas baterias de testes. A primeira comparando o desempenho de
-tempo de execuçãoo do código
+Foram realizadas duas baterias de testes. A primeira comparando o desempenho de
+tempo de execução do código
 escrito para GPU, o código escrito para CPU, a implementação disponível no
 OpenCV para CPU e a implementação do OpenCV para GPU.
 
 Para garantir a confiabilidade da solução utilizando GPU, também foi criada uma
 bateria de testes comparando o resultado obtido na CPU e na GPU.
 
-Todos os testes foram realizados duas vezes, uma sem utilizar otimizações do
-compilador, outra passando o parâmetro $-O3$ para o compilador \emph{nvcc}.
+Todos os testes foram realizados utilizando otimizações, passando o parâmetro 
+$-O3$ para o compilador \emph{nvcc} e foram executados na placa Jetson TK1.
 
 \section{Testes de desempenho de tempo de execução}
 
 Cada teste de desempenho de tempo consiste em, para uma das implementações 
 testadas, carregar uma imagem em alta resolução na memória, escolher
-aleatoriamente $1000$ janelas quadradas de tamanho fixo da imagem, medir e 
+aleatoriamente $1000$ janelas de tamanho fixo da imagem, medir e 
 armazenar
 o tempo gasto para executar a implementação em cada uma das janelas e
 finalmente calcular a média, desvio padrão, máximo e mínimo dos valores
-medidos.
+medidos. Devido a limitações de memória e tempo de execução dos testes, o
+número de iterações foi reduzido para $500$ nas janelas maiores do que $1280
+\times 720$. Para a implementação deste trabalho é medido também o tempo
+gasto para executar cada uma das três funções da biblioteca necessárias para
+obter o descritor: normalização de imagem, cálculo dos descritores e cálculo do
+descritor.
 
 Esse teste foi executado para cada uma das quatro implementações,
      com vários tamanhos de janela, de maneira a medir a
-escalabilidade de cada uma.
+escalabilidade de cada uma. foram escolhidas $15$ janelas com tamanhos múltiplos
+de $16 \times 9$ células (ou seja, tamanhos múltiplos de $128 \times 72$
+                          \emph{pixels}).
 
 \subsection{Resultados}
+
+A Tabela \ref{tab:time1} contém os valores da média de tempo gasto em uma
+janela para cada uma das quatro implementações e a Figura \ref{fig:time1} um
+gráfico de barras correspondente.
+
+\begin{table}[]
+\centering
+\caption{Média de tempo de execução para vários tamanhos de janela.}
+\label{tab:time1}
+\begin{tabular}{c|r|r|r|r}
+ Janela & \multicolumn{1}{c|}{Implementação CPU} & \multicolumn{1}{c|}{Implementação
+   GPU} & \multicolumn{1}{c|}{CPU OpenCV} & \multicolumn{1}{c}{GPU OpenCV} \\
+     \hline
+     128 x 72 & 2,97 & 3,82 & 1,05 & 12,28 \\ \hline
+     256 x 144 & 11,71 & 5,15 & 4,31 & 20,80 \\ \hline
+     384 x 216 & 26,52 & 7,81 & 10,25 & 25,36 \\ \hline
+     512 x 288 & 47,56 & 11,60 & 19,82 & 22,90 \\ \hline
+     640 x 360 & 74,32 & 16,47 & 31,20 & 29,40 \\ \hline
+     768 x 432 & 107,85 & 20,02 & 46,88 & 25,59 \\ \hline
+     896 x 504 & 147,37 & 24,01 & 64,45 & 31,71 \\ \hline
+     1024 x 576 & 193,96 & 27,98 & 88,10 & 41,05 \\ \hline
+     1152 x 648 & 244,01 & 33,42 & 105,22 & 50,80 \\ \hline
+     1280 x  720 & 301,37 & 38,47 & 133,53 & 54,32 \\ \hline
+     1408 x 792 & 364,07 & 41,79 & 159,66 & 63,15 \\ \hline
+     1536 x 864 & 435,18 & 46,30 & 206,18 & 74,48 \\ \hline
+     1664 x 936 & 510,34 & 47,83 & 225,29 & 82,69 \\ \hline
+     1792 x 1008 & 590,94 & 46,81 & 270,39 & 96,65 \\ \hline
+     1920 x 1080 & 678,01 & 47,41 & 301,78 & 122,82
+  \end{tabular}
+\end{table}
+
+\begin{figure}[h!]
+  \centering
+  \caption{Comparação de tempo de execução entre as quatro implementações}
+  \includegraphics[keepaspectratio=true,width=0.9\textwidth]
+    {images/Chart_AVG.png}
+      \fonte{Autoria própria.}
+  \label{fig:time1}
+\end{figure}
+
+A Figura \ref{fig:time2} contém um gráfico de barras obtido apenas com os
+valores das implementações em GPU, de forma a facilitar a comparação entre as
+duas.
+
+\begin{figure}[h!]
+  \centering
+  \caption{Comparação entre as implementações do OpenCV e deste trabalho}
+  \includegraphics[keepaspectratio=true,width=0.9\textwidth]
+    {images/Chart_AVG2.png}
+      \fonte{Autoria própria.}
+  \label{fig:time2}
+\end{figure}
+
+A Tabela \ref{tab:speedupcpu} mostra a aceleração obtida (quantas vezes é possível
+executar um dos algoritmos na mesma quantidade de tempo que se executa o outro,
+ou, em outras palavras, quantos quadros por segundo podem ser processados por
+um enquanto o outro executa um quadro) pela implementação em GPU
+em comparação com a implementação em CPU deste trabalho.
+
+\begin{table}[]
+\centering
+\caption{Aceleração em comparação com a implementação em CPU}
+\label{tab:speedupcpu}
+\begin{tabular}{c|r|r|r}
+Tamanho & \multicolumn{1}{c|}{CPU} & \multicolumn{1}{c|}{GPU} &
+\multicolumn{1}{c}{Aceleração} \\ \hline
+128 x 72 & 2,97 & 3,82 & 0,78 \\ \hline
+256 x 144 & 11,71 & 5,15 & 2,27 \\ \hline
+384 x 216 & 26,52 & 7,81 & 3,40 \\ \hline
+512 x 288 & 47,56 & 11,60 & 4,10 \\ \hline
+640 x 360 & 74,32 & 16,47 & 4,51 \\ \hline
+768 x 432 & 107,85 & 20,02 & 5,39 \\ \hline
+896 x 504 & 147,37 & 24,01 & 6,14 \\ \hline
+1024 x 576 & 193,96 & 27,98 & 6,93 \\ \hline
+1152 x 648 & 244,01 & 33,42 & 7,30 \\ \hline
+1280 x  720 & 301,37 & 38,47 & 7,83 \\ \hline
+1408 x 792 & 364,07 & 41,79 & 8,71 \\ \hline
+1536 x 864 & 435,18 & 46,30 & 9,40 \\ \hline
+1664 x 936 & 510,34 & 47,83 & 10,67 \\ \hline
+1792 x 1008 & 590,94 & 46,81 & 12,62 \\ \hline
+1920 x 1080 & 678,01 & 47,41 & 14,30
+\end{tabular}
+\end{table}
+
+A Tabela \ref{tab:speedupocv} mostra a aceleração obtida em comparação com o
+OpenCV.
+
+\begin{table}[]
+\centering
+\caption{Aceleração em comparação com o OpenCV}
+\label{tab:speedupocv}
+\begin{tabular}{c|r|r|r}
+Tamanho & \multicolumn{1}{c|}{OpenCV} & \multicolumn{1}{c|}{Implementação GPU} &
+\multicolumn{1}{c}{Aceleração} \\ \hline
+128 x 72 & 12,28 & 3,82 & 3,21 \\ \hline
+256 x 144 & 20,80 & 5,15 & 4,04 \\ \hline
+384 x 216 & 25,36 & 7,81 & 3,25 \\ \hline
+512 x 288 & 22,90 & 11,60 & 1,97 \\ \hline
+640 x 360 & 29,40 & 16,47 & 1,78 \\ \hline
+768 x 432 & 25,59 & 20,02 & 1,28 \\ \hline
+896 x 504 & 31,71 & 24,01 & 1,32 \\ \hline
+1024 x 576 & 41,05 & 27,98 & 1,47 \\ \hline
+1152 x 648 & 50,80 & 33,42 & 1,52 \\ \hline
+1280 x  720 & 54,32 & 38,47 & 1,41 \\ \hline
+1408 x 792 & 63,15 & 41,79 & 1,51 \\ \hline
+1536 x 864 & 74,48 & 46,30 & 1,61 \\ \hline
+1664 x 936 & 82,69 & 47,83 & 1,73 \\ \hline
+1792 x 1008 & 96,65 & 46,81 & 2,06 \\ \hline
+1920 x 1080 & 122,82 & 47,41 & 2,59
+\end{tabular}
+\end{table}
+
+A Tabela \ref{tab:timecpu} contém os valores da média, desvio padrão, máximo e
+mínimo para a implementação em CPU deste trabalho.
+
+\begin{table}[]
+\centering
+\caption{Estatísticas de tempo para a implementação em CPU deste trabalho}
+\label{tab:timecpu}
+\begin{tabular}{c|r|r|r|r}
+Tamanho & \multicolumn{1}{c|}{Média} & \multicolumn{1}{c|}{Desvio Padrão} &
+\multicolumn{1}{c|}{Mínimo} & \multicolumn{1}{c}{Máximo} \\ \hline
+128 x 72 & 2,97 & 1,03 & 1,86 & 31,52 \\ \hline
+256 x 144 & 11,71 & 1,68 & 9,49 & 45,09 \\ \hline
+384 x 216 & 26,52 & 2,55 & 22,69 & 77,88 \\ \hline
+512 x 288 & 47,56 & 3,56 & 41,32 & 104,21 \\ \hline
+640 x 360 & 74,32 & 4,47 & 65,30 & 86,86 \\ \hline
+768 x 432 & 107,85 & 5,78 & 97,51 & 124,53 \\ \hline
+896 x 504 & 147,37 & 7,83 & 134,46 & 169,86 \\ \hline
+1024 x 576 & 193,96 & 9,47 & 179,69 & 224,82 \\ \hline
+1152 x 648 & 244,01 & 10,77 & 226,86 & 281,23 \\ \hline
+1280 x  720 & 301,37 & 12,58 & 280,92 & 343,70 \\ \hline
+1408 x 792 & 364,07 & 13,52 & 342,80 & 408,08 \\ \hline
+1536 x 864 & 435,18 & 15,24 & 411,13 & 487,64 \\ \hline
+1664 x 936 & 510,34 & 16,63 & 483,80 & 564,13 \\ \hline
+1792 x 1008 & 590,94 & 18,80 & 562,46 & 564,13 \\ \hline
+1920 x 1080 & 678,01 & 17,91 & 649,04 & 742,36
+\end{tabular}
+\end{table}
+
+A Tabela \ref{tab:timegpu} contém os valores da média, desvio padrão, máximo e
+mínimo para a implementação em GPU deste trabalho.
+
+\begin{table}[]
+\centering
+\caption{Estatísticas de tempo para a implementação em GPU deste trabalho}
+\label{tab:timegpu}
+\begin{tabular}{c|r|r|r|r}
+Tamanho & \multicolumn{1}{c|}{Média} & \multicolumn{1}{c|}{Desvio Padrão} &
+\multicolumn{1}{c|}{Mínimo} & \multicolumn{1}{c}{Máximo} \\ \hline
+128 x 72 & 3,82 & 0,16 & 3,64 & 5,96 \\ \hline
+256 x 144 & 5,15 & 0,23 & 4,81 & 7,04 \\ \hline
+384 x 216 & 7,81 & 0,59 & 2,59 & 22,43 \\ \hline
+512 x 288 & 11,60 & 0,58 & 3,26 & 15,73 \\ \hline
+640 x 360 & 16,47 & 0,39 & 3,26 & 20,26 \\ \hline
+768 x 432 & 20,02 & 4,94 & 4,88 & 27,06 \\ \hline
+896 x 504 & 24,01 & 7,22 & 6,36 & 42,82 \\ \hline
+1024 x 576 & 27,98 & 9,95 & 10,58 & 46,06 \\ \hline
+1152 x 648 & 33,42 & 12,59 & 12,79 & 57,82 \\ \hline
+1280 x  720 & 38,47 & 14,80 & 14,52 & 73,69 \\ \hline
+1408 x 792 & 41,79 & 15,57 & 17,17 & 72,18 \\ \hline
+1536 x 864 & 46,30 & 16,73 & 20,38 & 79,30 \\ \hline
+1664 x 936 & 47,83 & 17,28 & 22,98 & 118,59 \\ \hline
+1792 x 1008 & 46,81 & 14,96 & 24,48 & 99,85 \\ \hline
+1920 x 1080 & 47,41 & 13,41 & 25,62 & 111,37
+\end{tabular}
+\end{table}
+
+A Tabela \ref{tab:timecpuocv} contém os valores da média, desvio padrão, máximo e
+mínimo para a implementação em CPU do OpenCV.
+
+\begin{table}[]
+\centering
+\caption{Estatísticas de tempo para a implementação em CPU do openCV}
+\label{tab:timecpuocv}
+\begin{tabular}{c|r|r|r|r}
+Tamanho & \multicolumn{1}{c|}{Média} & \multicolumn{1}{c|}{Desvio Padrão} &
+\multicolumn{1}{c|}{Mínimo} & \multicolumn{1}{c}{Máximo} \\ \hline
+128 x 72 & 1,05 & 0,03 & 1,03 & 1,65 \\ \hline
+256 x 144 & 4,31 & 0,85 & 4,15 & 24,62 \\ \hline
+384 x 216 & 10,25 & 0,30 & 10,07 & 18,71 \\ \hline
+512 x 288 & 19,82 & 0,10 & 19,46 & 20,55 \\ \hline
+640 x 360 & 31,20 & 0,10 & 30,96 & 31,87 \\ \hline
+768 x 432 & 46,88 & 0,39 & 46,60 & 58,27 \\ \hline
+896 x 504 & 64,45 & 4,61 & 62,36 & 102,90 \\ \hline
+1024 x 576 & 88,10 & 0,40 & 87,59 & 98,92 \\ \hline
+1152 x 648 & 105,22 & 0,53 & 104,77 & 116,40 \\ \hline
+1280 x  720 & 133,53 & 0,57 & 133,00 & 146,45 \\ \hline
+1408 x 792 & 159,66 & 0,73 & 159,12 & 172,36 \\ \hline
+1536 x 864 & 206,18 & 0,79 & 205,59 & 217,89 \\ \hline
+1664 x 936 & 225,29 & 0,85 & 224,63 & 238,68 \\ \hline
+1792 x 1008 & 270,39 & 0,94 & 269,62 & 284,55 \\ \hline
+1920 x 1080 & 301,78 & 0,98 & 300,97 & 315,64
+\end{tabular}
+\end{table}
+
+A Tabela \ref{tab:timegpuocv} contém os valores da média, desvio padrão, máximo e
+mínimo para a implementação em GPU do OpenCV.
+
+\begin{table}[]
+\centering
+\caption{Estatísticas de tempo para a implementação em GPU do openCV}
+\label{tab:timegpuocv}
+\begin{tabular}{c|r|r|r|r}
+Tamanho & \multicolumn{1}{c|}{Média} & \multicolumn{1}{c|}{Desvio Padrão} &
+\multicolumn{1}{c|}{Mínimo} & \multicolumn{1}{c}{Máximo} \\ \hline
+128 x 72 & 12,28 & 1,00 & 7,12 & 20,17 \\ \hline
+256 x 144 & 20,80 & 5,18 & 7,44 & 53,32 \\ \hline
+384 x 216 & 25,36 & 5,51 & 9,75 & 49,26 \\ \hline
+512 x 288 & 22,90 & 7,00 & 9,91 & 62,19 \\ \hline
+640 x 360 & 29,40 & 10,17 & 13,50 & 90,31 \\ \hline
+768 x 432 & 25,59 & 4,32 & 16,00 & 47,27 \\ \hline
+896 x 504 & 31,71 & 6,72 & 22,01 & 79,91 \\ \hline
+1024 x 576 & 41,05 & 6,41 & 28,90 & 59,90 \\ \hline
+1152 x 648 & 50,80 & 9,98 & 36,43 & 97,16 \\ \hline
+1280 x  720 & 54,32 & 5,80 & 45,48 & 74,55 \\ \hline
+1408 x 792 & 63,15 & 7,72 & 54,73 & 87,95 \\ \hline
+1536 x 864 & 74,48 & 1,98 & 64,16 & 94,58 \\ \hline
+1664 x 936 & 82,69 & 3,95 & 74,59 & 99,38 \\ \hline
+1792 x 1008 & 96,65 & 1,91 & 86,63 & 138,56 \\ \hline
+1920 x 1080 & 122,82 & 15,10 & 99,05 & 158,41
+\end{tabular}
+\end{table}
+
+A Tabela \ref{tab:timepartialcpu} contém as médias das medidas de tempo para cada uma das
+etapas (normalização, cálculo dos gradientes, cálculo do descritor) para a
+implementação da CPU e a tabela \ref{tab:timepartialgpu} essas medidas para a
+implementação da GPU. As tabelas \ref{tab:stddevcpu} e \ref{tab:stddevgpu}
+contém, respectivamente, os valores de desvio padrão para essas medidas.
+
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+\begin{table}[]
+\centering
+\caption{Tempo gasto em cada uma das etapas na CPU.}
+\label{tab:timepartialcpu}
+\begin{tabular}{c|r|r|r|r}
+Tamanho & \multicolumn{1}{c|}{Normalização} & \multicolumn{1}{c|}{Gradientes} &
+\multicolumn{1}{c|}{Descritor} & \multicolumn{1}{c}{Total} \\ \hline
+\multirow{2}{*}{128 x 72} & 0,18 & 1,72 & 1,07 & 2,97 \\ \cline{2-5} 
+& 5,99\% & 57,91\% & 36,10\% & 100,00\% \\ \hline
+\multirow{2}{*}{256 x 144} & 0,72 & 6,63 & 4,37 & 11,71 \\ \cline{2-5} 
+& 6,11\% & 56,59\% & 37,30\% & 100,00\% \\ \hline
+\multirow{2}{*}{384 x 216} & 1,62 & 14,83 & 10,07 & 26,52 \\ \cline{2-5} 
+& 6,10\% & 55,93\% & 37,97\% & 100,00\% \\ \hline
+\multirow{2}{*}{512 x 288} & 2,88 & 26,18 & 18,50 & 47,56 \\ \cline{2-5} 
+& 6,06\% & 55,05\% & 38,89\% & 100,00\% \\ \hline
+\multirow{2}{*}{640 x 360} & 4,49 & 40,71 & 29,12 & 74,32 \\ \cline{2-5} 
+& 6,05\% & 54,77\% & 39,18\% & 100,00\% \\ \hline
+\multirow{2}{*}{768 x 432} & 6,46 & 58,66 & 42,72 & 107,85 \\ \cline{2-5} 
+& 5,99\% & 54,39\% & 39,61\% & 100,00\% \\ \hline
+\multirow{2}{*}{896 x 504} & 8,79 & 79,89 & 58,69 & 147,37 \\ \cline{2-5} 
+& 5,96\% & 54,21\% & 39,83\% & 100,00\% \\ \hline
+\multirow{2}{*}{1024 x 576} & 11,46 & 103,87 & 78,63 & 193,96 \\
+\cline{2-5} 
+& 5,91\% & 53,55\% & 40,54\% & 100,00\% \\ \hline
+\multirow{2}{*}{1152 x 648} & 14,50 & 130,86 & 98,66 & 244,01 \\
+\cline{2-5} 
+& 5,94\% & 53,63\% & 40,43\% & 100,00\% \\ \hline
+\multirow{2}{*}{1280 x  720} & 17,89 & 161,79 & 121,69 & 301,37 \\
+\cline{2-5} 
+& 5,94\% & 53,69\% & 40,38\% & 100,00\% \\ \hline
+\multirow{2}{*}{1408 x 792} & 21,64 & 194,86 & 147,57 & 364,07
+\\ \cline{2-5} 
+& 5,94\% & 53,52\% & 40,53\% & 100,00\% \\ \hline
+\multirow{2}{*}{1536 x 864} & 25,74 & 232,82 & 176,62 & 435,18
+\\ \cline{2-5} 
+& 5,92\% & 53,50\% & 40,59\% & 100,00\% \\ \hline
+\multirow{2}{*}{1664 x 936} & 30,21 & 273,19 & 206,95 &
+510,34 \\ \cline{2-5} 
+& 5,92\% & 53,53\% & 40,55\% & 100,00\% \\ \hline
+\multirow{2}{*}{1792 x 1008} & 35,09 & 316,22 & 239,63 &
+590,94 \\ \cline{2-5} 
+& 5,94\% & 53,51\% & 40,55\% & 100,00\% \\ \hline
+\multirow{2}{*}{1920 x 1080} & 40,31 & 361,99 & 275,71 &
+678,01 \\ \cline{2-5} 
+& 5,95\% & 53,39\% & 40,66\% & 100,00\%
+\end{tabular}
+\end{table}
+
+% Please add the following required packages to your
+% document preamble:
+% \usepackage{multirow}
+\begin{table}[]
+\centering
+\caption{Tempo gasto em cada uma das etapas na GPU.}
+\label{tab:timepartialgpu}
+\begin{tabular}{c|r|r|r|r}
+Tamanho & \multicolumn{1}{c|}{Normalização} &
+\multicolumn{1}{c|}{Gradientes} &
+\multicolumn{1}{c|}{Descritor} &
+\multicolumn{1}{c}{Total} \\ \hline
+\multirow{2}{*}{128 x 72} & 0,87 & 0,88 & 2,07 & 3,82 \\
+\cline{2-5} 
+& 22,68\% & 23,12\% & 54,21\% & 100,00\% \\ \hline
+\multirow{2}{*}{256 x 144} & 1,00 & 1,10 & 3,05 & 5,15
+\\ \cline{2-5} 
+& 19,36\% & 21,40\% & 59,24\% & 100,00\% \\ \hline
+\multirow{2}{*}{384 x 216} & 1,33 & 1,53 & 4,95 & 7,81
+\\ \cline{2-5} 
+& 17,01\% & 19,60\% & 63,40\% & 100,00\% \\ \hline
+\multirow{2}{*}{512 x 288} & 1,82 & 2,14 & 7,64 &
+11,60 \\ \cline{2-5} 
+& 15,68\% & 18,46\% & 65,85\% & 100,00\% \\ \hline
+\multirow{2}{*}{640 x 360} & 2,43 & 2,92 & 11,12 &
+16,47 \\ \cline{2-5} 
+& 14,77\% & 17,75\% & 67,48\% & 100,00\% \\ \hline
+\multirow{2}{*}{768 x 432} & 2,98 & 3,56 & 13,48 &
+20,02 \\ \cline{2-5} 
+& 14,88\% & 17,79\% & 67,33\% & 100,00\% \\ \hline
+\multirow{2}{*}{896 x 504} & 3,61 & 4,29 & 16,10 &
+24,01 \\ \cline{2-5} 
+& 15,02\% & 17,89\% & 67,09\% & 100,00\% \\
+\hline
+\multirow{2}{*}{1024 x 576} & 4,16 & 4,96 &
+18,86 & 27,98 \\ \cline{2-5} 
+& 14,86\% & 17,73\% & 67,41\% & 100,00\% \\
+\hline
+\multirow{2}{*}{1152 x 648} & 4,91 & 5,99 &
+22,51 & 33,42 \\ \cline{2-5} 
+& 14,71\% & 17,94\% & 67,35\% & 100,00\% \\
+\hline
+\multirow{2}{*}{1280 x  720} & 5,37 &
+6,85 & 26,25 & 38,47 \\ \cline{2-5} 
+& 13,96\% & 17,80\% & 68,24\% & 100,00\%
+\\ \hline
+\multirow{2}{*}{1408 x 792} & 5,42 &
+7,40 & 28,97 & 41,79 \\ \cline{2-5} 
+& 12,98\% & 17,70\% & 69,32\% &
+100,00\% \\ \hline
+\multirow{2}{*}{1536 x 864} & 5,78 &
+7,83 & 32,69 & 46,30 \\ \cline{2-5} 
+& 12,48\% & 16,92\% & 70,61\% &
+100,00\% \\ \hline
+\multirow{2}{*}{1664 x 936} & 5,85 &
+8,04 & 33,95 & 47,83 \\ \cline{2-5} 
+& 12,22\% & 16,80\% & 70,98\% &
+100,00\% \\ \hline
+\multirow{2}{*}{1792 x 1008} & 5,94 &
+7,91 & 32,95 & 46,81 \\ \cline{2-5} 
+& 12,70\% & 16,90\% & 70,40\% &
+100,00\% \\ \hline
+\multirow{2}{*}{1920 x 1080} & 6,21
+& 7,99 & 33,21 & 47,41 \\
+\cline{2-5} 
+& 13,11\% & 16,85\% & 70,04\% &
+100,00\%
+\end{tabular}
+\end{table}
+
+\begin{table}[]
+\centering
+\caption{Desvio padrão para cada etapa da implementação em CPU}
+\label{tab:stddevcpu}
+\begin{tabular}{c|r|r|r}
+Tamanho & \multicolumn{1}{c|}{Normalização} & \multicolumn{1}{c|}{Gradientes} &
+\multicolumn{1}{c}{Descritor} \\ \hline
+128 x 72 & 0,01 & 0,38 & 0,93 \\ \hline
+256 x 144 & 0,02 & 1,42 & 0,58 \\ \hline
+384 x 216 & 0,04 & 2,46 & 0,26 \\ \hline
+512 x 288 & 0,23 & 3,32 & 0,36 \\ \hline
+640 x 360 & 0,07 & 4,25 & 0,37 \\ \hline
+768 x 432 & 0,11 & 5,45 & 0,57 \\ \hline
+896 x 504 & 0,12 & 7,26 & 0,86 \\ \hline
+1024 x 576 & 0,12 & 8,57 & 1,34 \\ \hline
+1152 x 648 & 0,14 & 9,79 & 1,44 \\ \hline
+1280 x  720 & 0,15 & 11,39 & 1,64 \\ \hline
+1408 x 792 & 0,34 & 12,14 & 1,86 \\ \hline
+1536 x 864 & 0,19 & 13,55 & 2,13 \\ \hline
+1664 x 936 & 0,20 & 14,65 & 2,43 \\ \hline
+1792 x 1008 & 0,21 & 16,57 & 2,64 \\ \hline
+1920 x 1080 & 0,22 & 15,54 & 2,82
+\end{tabular}
+\end{table}
+
+\begin{table}[]
+\centering
+\caption{Desvio padrão para cada etapa da implementação em GPU}
+\label{tab:stddevgpu}
+\begin{tabular}{c|r|r|r}
+Tamanho & \multicolumn{1}{c|}{Normalização} & \multicolumn{1}{c|}{Gradientes} &
+\multicolumn{1}{c}{Descritor} \\ \hline
+128 x 72 & 0,14 & 0,05 & 0,16 \\ \hline
+256 x 144 & 0,11 & 0,06 & 0,14 \\ \hline
+384 x 216 & 0,14 & 0,09 & 0,44 \\ \hline
+512 x 288 & 0,22 & 0,13 & 0,37 \\ \hline
+640 x 360 & 0,12 & 0,15 & 0,23 \\ \hline
+768 x 432 & 0,65 & 0,93 & 3,50 \\ \hline
+896 x 504 & 0,96 & 1,33 & 5,08 \\ \hline
+1024 x 576 & 1,33 & 1,82 & 6,94 \\ \hline
+1152 x 648 & 1,70 & 2,32 & 8,94 \\ \hline
+1280 x  720 & 1,84 & 2,66 & 10,98 \\ \hline
+1408 x 792 & 1,79 & 2,96 & 11,93 \\ \hline
+1536 x 864 & 1,76 & 2,96 & 12,95 \\ \hline
+1664 x 936 & 1,50 & 2,97 & 13,76 \\ \hline
+1792 x 1008 & 1,30 & 2,70 & 11,83 \\ \hline
+1920 x 1080 & 1,40 & 2,45 & 10,52
+\end{tabular}
+\end{table}
+
+
+\vspace{7mm}
+
+\subsection{Avaliação dos resultados}
+
+Em primeiro lugar pode-se notar que a aceleração é maior para janelas de
+tamanho maior, tanto para a implementação deste trabalho quanto para a
+implementação em GPU do OpenCV. Para observar melhor esse resultado foi
+calculado um valor de \emph{megapixels} processados por segundo, a partir dos
+valores da tabela \ref{tab:time1}, de forma a ter um indicativo de velocidade
+de execução para cada tamanho de janela. Esses valores estão presentes na Tabela
+\ref{tab:pixels} e um gráfico correspondente na Figura \ref{fig:pixelspersec}. 
+Nota-se
+que a velocidade da implementação em CPU deste trabalho é aproximadamente
+constante, a da implementação em CPU do OpenCV decresce com o
+tamanho da entrada, provavelmente devido a \emph{overheads} no processamento de
+muitos histogramas ou muitos blocos, a velocidade da implementação em GPU do
+OpenCV cresce até estabilizar em torno dos 19 \emph{megapixels} por segundo, e
+a da implementação em GPU deste trabalho cresce continuamente até o maior 
+tamanho de janela usado.
+
+\begin{table}[]
+\centering
+\caption{Velocidade de execução de cada implementação.}
+\label{tab:pixels}
+\begin{tabular}{c|r|r|r|r}
+Tamanho & \multicolumn{1}{c|}{Implementação CPU} &
+\multicolumn{1}{c|}{Implementação GPU} & \multicolumn{1}{c|}{CPU OpenCV} &
+\multicolumn{1}{c}{GPU OpenCV} \\ \hline
+128 x 72 & 3,10 & 2,41 & 8,75 & 0,75 \\ \hline
+256 x 144 & 3,15 & 7,16 & 8,56 & 1,77 \\ \hline
+384 x 216 & 3,13 & 10,62 & 8,09 & 3,27 \\ \hline
+512 x 288 & 3,10 & 12,71 & 7,44 & 6,44 \\ \hline
+640 x 360 & 3,10 & 13,99 & 7,39 & 7,84 \\ \hline
+768 x 432 & 3,08 & 16,57 & 7,08 & 12,97 \\ \hline
+896 x 504 & 3,06 & 18,81 & 7,01 & 14,24 \\ \hline
+1024 x 576 & 3,04 & 21,08 & 6,70 & 14,37 \\ \hline
+1152 x 648 & 3,06 & 22,34 & 7,09 & 14,69 \\ \hline
+1280 x  720 & 3,06 & 23,95 & 6,90 & 16,97 \\ \hline
+1408 x 792 & 3,06 & 26,68 & 6,98 & 17,66 \\ \hline
+1536 x 864 & 3,05 & 28,66 & 6,44 & 17,82 \\ \hline
+1664 x 936 & 3,05 & 32,56 & 6,91 & 18,83 \\ \hline
+1792 x 1008 & 3,06 & 38,59 & 6,68 & 18,69 \\ \hline
+1920 x 1080 & 3,06 & 43,74 & 6,87 & 16,88
+\end{tabular}
+\end{table}
+
+\begin{figure}[h!]
+  \centering
+  \caption{Comparação de velocidade entre as quatro implementações}
+  \includegraphics[keepaspectratio=true,width=0.9\textwidth]
+    {images/Chart_SPD.png}
+      \fonte{Autoria própria.}
+  \label{fig:pixelspersec}
+\end{figure}
+
+Um resultado que pode ser obtido através dos dados das tabelas
+\ref{tab:timecpu}, \ref{tab:timegpu}, \ref{tab:timecpuocv} e
+  \ref{tab:timegpuocv} é que as implementações em GPU tendem a apresentar uma 
+  variação maior de tempo de execução, especialmente considerando os valores 
+  máximo e mínimo.
+
+Comparando as implementações em CPU e GPU deste trabalho, nota-se que a etapa
+mais custosa na CPU é o cálculo dos gradientes, que é a etapa que apresenta
+maior aceleração na implementação da GPU e que a etapa mais custosa
+para a GPU é a terceira, cálculo dos histogramas e normalização em blocos.
+Tamém pode-se notar que a terceira etapa é a que apresenta maior variação de
+tempo de execução na GPU. Isso se deve a problemas relacionados com acesso à
+memória compartilhada no cálculo dos histogramas e com acesso à memória 
+global para agrupar os histogramas em blocos. 
+
+Quando é realizada a soma parcial no \emph{kernel} do cálculo dos histogramas o
+acesso à memória compartilhada é bem irregular, porque depende da
+orientação dos gradientes sendo processados. Sendo assim, o acesso causa muitos
+conflitos de banco imprevisíveis, serializando a execução do \emph{kernel} e
+reduzindo a eficiência do \emph{kernel}. 
+
+No agrupamento em blocos o acesso da memória não é localizado, cada bloco
+precisa de histogramas que estão localizados em posições distantes um do outro.
+Caso as transações fossem organizadas pela entrada, com cada \emph{thread}
+sendo responsável por copiar uma classe do histograma para várias posições do
+descritor final, ao invés de ser responsável por calcular um elemento do
+descritor, a leitura poderia ser coalescida, mas a gravação teria o problema de
+acessar posições distantes de memória.
 
 \section{Testes de comparação de resultado entre CPU e GPU}
 
-Para comparar as duas implementações, um banco de imagens com $1000$ arquivos 
-foi montado, cada implementação foi executada em cada uma das imagens e foi
-calculado, entre os dois vetores resultantes, a média, desvio padrão, máximo e
-mínimo de erro entre cada componente correspondente, além da distância 
-euclidiana entre os dois vetores. Após isso, a média, desvio padrâo, máximo e
-mínimo dos resultados das $1000$ imagens foi calculado.
+Para comparar as duas implementações, foi realizado um procedimento semelhante
+ao usado nos testes de desempenho de tempo. Uma imagem é carregada na memória,
+   são escolhidas $1000$ janelas de tamanho fixo ($1280 \times 640$
+                                                  \emph{pixels}), e, para cada
+   janela utilizada, são obtidos dois descritores, um utilizando a
+   implementação em CPU e outro usando a implementação em GPU e é calculada a distância
+   euclidiana entre os dois, normalizada pela soma das 
+   magnitudes dos descritores, considerando cada descritor como um vetor
+   \emph{n}-dimensional. Isso gera um valor de erro igual a $0$ caso os dois
+   descritores sejam iguais e um valor igual a $1$ caso eles tenham uma
+   orientação simétrica, independente da magnitude de cada um.
+   Finalmente, a média, desvio padrão, mínimo e máximo são calculados para os
+   $1000$ valores obtidos. O mesmo procedimento é repetido para a normalização
+   de imagem e para o cálculo dos gradientes, considerando a concatenação dos
+   valores dos \emph{pixels} como um vetor, no caso da normalização, e obtendo
+   dois vetores, um com a concatenação das magnitudes e outro com a
+   concatenação das orientações, para os
+   gradientes. A Tabela \ref{tab:diff} contém os resultados desses
+   testes.
 
-\subsection{Resultados}
+\begin{table}[]
+\centering
+\caption{Distancia euclidiana normalizada entre os descritores da CPU e da GPU}
+\label{tab:diff}
+\begin{tabular}{c|r|r|r|r}
+Tamanho & \multicolumn{1}{c|}{Normalização} & \multicolumn{1}{c|}{Magnitude} &
+\multicolumn{1}{c}{Orientação} & \multicolumn{1}{c|}{Descritor} \\ \hline
+Média & 0,000 & 0,000 & 0,070 & 0,000 \\ \hline
+Desvio Padrão & 0,000 & 0,000 & 0,021 & 0,000 \\ \hline
+Mínimo & 0,000 & 0,000 & 0,027 & 0,000 \\ \hline
+Máximo & 0,000 & 0,000 & 0,468 & 0,000
+\end{tabular}
+\end{table}
+
+Com esse teste, se comprovou um erro de $0\%$ nos resultados, ou seja, os dois
+descritores são equivalentes. As diferenças obtidas para o cálculo da
+orientação do gradiente foram investigadas, e chegou-se a conclusão de que a
+função usada para obter o arco tangente retorna, em alguns casos, $+\pi$ na CPU
+e $-\pi$ na GPU e em alguns outros o contrário.
+Esse resultado parcial é indiferente para o cálculo dos histogramas.
 

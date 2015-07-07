@@ -1,3 +1,68 @@
 \chapter{Conclusões}\label{cap:conclusao}
 
+Métodos para obter o descritor HOG foram implementados na CPU e na GPU, obtendo
+uma aceleração na GPU de até 14,3 vezes se comparado com a implementação
+sequencial feita na CPU. Também foi realizada uma comparação com uma
+implementação de referência já existente, a do OpenCV, obtendo um ganho de
+desempenho de 28\% a 159\% para janelas de tamanho $512 \times 288$ ou maiores,
+           e superiores a 200\% para janelas menores do que isso.
+ 
+A implementação foi projetada para e testada em um processador de baixo custo e 
+baixo consumo, conseguindo velocidades de execução de aproximadamente 21
+quadros por segundo para janelas de tamanho $1920 \times 1080$ \emph{pixels} e
+aproximadamente 26 quadros por segundo para janelas de tamanho $1280 \times
+720$ \emph{pixels}.
+          
+Para chegar a tais ganhos, foi essencial projetar a
+implementação da GPU considerando os diversos tipos de memória disponíveis para
+uso e seus padrões de acesso otimizados. Isso resultou em ganhos muito
+expressivos para as tarefas de normalização da imagem e cálculo dos gradientes,
+sendo menos expressivos para o cálculo dos histogramas e normalização em blocos.
+Isso se deve à necessidade de acessos irregulares de memória no cálculo dos
+histogramas, e também a acessos de memória não contínua no agrupamento em
+blocos. Mesmo assim a implementação em GPU dessas etapas do método
+continua a ser mais eficiente do que a de CPU para janelas de tamanho grande.
+
+\section{Trabalhos Futuros}
+
+Aqui são citadas algumas propostas de continuidade do trabalho realizado.
+
+\noindent \textbf{Implementar um classificador}
+
+No escopo desse trabalho não foi implementado um classificador para ser usado
+junto com o descritor. Muitos classificadores são altamente paralelizáveis e
+podem aproveitar a arquitetura da GPU para acelerar a sua velocidade de
+execução. Seria interessante implementar a etapa de classificação na
+biblioteca, tanto para tornar a implementação mais completa quanto para
+reproduzir os testes de tempo por etapa, para verificar qual parcela de tempo é
+gasta na tarefa de classificação.
+
+\noindent \textbf{Adicionar opções de configuração da biblioteca}
+
+Alguns parâmetros da biblioteca podem ser configurados. No momento podem ser
+escolhidos o tamanho da célula, tamanho do bloco, deslocamento do bloco,
+tamanho da janela de detecção (em dimensões da malha de células) e
+número de classes no histograma. Seria interessante permitir ao
+usuário escolher outras opções, como, por exemplo, método de
+normalização do bloco, método de obtenção do gradiente de uma imagem
+colorida, método de normalização de cor da imagem, permitir escolher
+o método de alocação do \emph{buffer} de memória para permitir a
+utilização com outras GPUs, entre outros.
+
+\noindent \textbf{Tornar a implementação mais flexível}
+
+Alguns parâmetros da biblioteca foram fixados em valores específicos, e seria
+interessante que eles fossem configuráveis de acordo com a necessidade. Em
+especial os tamanhos dos blocos de \emph{threads} foram escolhdos com o
+processador Tegra K1 em mente, e deveriam poder ser modificados mais 
+facilmente. Também seria interessante permitir outros formatos de imagem de
+entrada, como imagens em escala de cinza. Essas mudanças possivelmente
+exigiriam um reprojetamento de alguns dos \emph{kernels}.
+
+\noindent \textbf{Melhorar a API da biblioteca}
+
+A API da biblioteca precisa ser atualizada para levar em conta alguns
+desenvolvimentos da implementação. Em especial a função de cálculo do descritor
+pode ser separada em cálculo de histogramas e agrupamento/normalização em 
+blocos.
 

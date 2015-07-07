@@ -1,33 +1,52 @@
-\chapter{Levantamento Bibiografico}\label{cap:levbibliog}
-
-\section{Extração de características de imagens}
-
-TODO
+\chapter{Trabalhos Relacionados}\label{cap:levbibliog}
 
 \section{Uso de GPU para Extração de Características}
 
-Em \cite{ready2007gpu} foram comparadas uma implementação baseada em CPU e
-uma baseada em GPU(\emph{Graphical Processing Unit}) de um algoritmo
-de rastreamento de características. Esse algoritmo recebe uma imagem da 
-característica que deve ser encontrada e faz uma busca exaustiva na imagem,
-comparando qual bloco da imagem possui uma semelhança maior com a característica
-desejada. 
-Os autores comparam a performance do código em uma CPU 
-Pentium IV, 3.2GHz com uma GPU Quadro NVS 285. Os resultados demonstram que a 
-CPU, com uso de 90\% da sua capacidade, consegue 
-detectar e acompanhar 40 características em um vídeo em tempo real enquanto que 
-a GPU consegue seguir até 500 características em tempo real. 
+Em \cite{zolynski2008lbpGPU} é descrita a implementação de um descritor baseado em
+\emph{Local Binary Patterns}, usando o \emph{framework} Cg da NVIDIA, um
+precursor de \sigla{GPGPU}{General Purpose Computing on Graphics Processing
+  Units}(\emph{General-Purpose computing on Graphics Processing Units} -
+         computação de propósito geral em unidades de processamento gráfico)
+  focado em reutilizar o processamento gráfico de outras
+maneiras. Comparando a performance de uma CPU Core2Quad 2.4GHz com as GPUs
+GeForce 7600 GT, GeForce 8600 GT e GeForce 8800 GTS, foram obtidos tempos
+de execução de aproximadamente ${{1} \over {14}}$ a ${{1} \over {18}}$ do tempo
+gasto na CPU.
 
 Em \cite{park2008low} é feita uma comparação do desempenho de velocidade do algoritmo de 
 detecção de bordas de Canny aplicado em conjunto com o algoritmo \emph{Vector Coherence Mapping},
 utilizado para detecçao de movimentos em vídeos. Os algoritmos foram executados 
-em uma CPU, 2.4 GHz Intel Core 2,  e as duas GPUs, 8800GTS-512 e uma placa de vídeo
+em uma CPU, 2.4 GHz Intel Core 2,  e duas GPUs, uma GeForce 8800GTS e uma placa de vídeo
 \emph{onboard} 8600MGT do Apple MacBookPro. Tanto a implementação na CPU como 
-na GPU, utilizaram os mesmos parâmetros e estrutura para que as comparações 
-sejam as mais corretas possíveis. Os resultados demonstram que a GPU \emph{onboard}
- obteve uma velocidade de execução 3.15 vezes melhor do que a CPU. A segunda GPU
-obteve uma velocidade de execução 22.96 vezes melhor do que a CPU. Os autores demonstram
-com os resultados que é possível conseguir ganhos de performance significativos
-ao se utilizar uma GPU para algoritmos pesados, contanto que o código seja 
-propriamente otimizado para tirar proveito da arquitetura de uma GPU.
+na GPU utilizaram os mesmos parâmetros e estrutura para que as comparações 
+fossem as mais corretas possíveis. Os resultados demonstram que a GPU \emph{onboard}
+ obteve uma velocidade de execução 3.15 vezes maior do que a CPU. A segunda GPU
+obteve uma velocidade de execução 22.96 vezes maior do que a CPU.
 
+\section{Implementações paralelas do HOG}
+
+Em \cite{fastHOG} é descrita uma implementação multiescala do HOG em GPU. A implementação
+foi testada em uma placa de vídeo GeForce GTX 285, obtendo velocidades de
+execução até 67 vezes maiores do que numa CPU. Para fazer o redimensionamento
+necessário para a análise multiescala, eles copiam a imagem para o cache de
+textura da placa, usando as funções de interpolação em \emph{hardware}. A
+normalização de cor é executada em um bloco de tamanho $16 \times 16$, com cada
+\emph{thread} processando um \emph{pixel}. Os gradientes são computados
+usando dois \emph{kernels}, o primeiro computa os gradientes horizontais e o
+segundo calcula os gradientes verticais, a magnitude e a orientação dos
+gradientes. No cálculo dos histogramas, no agrupamento em blocos e na
+normalização em blocos, cada bloco do HOG é mapeado para um bloco de
+\emph{threads}.
+
+Em \cite{hogfpga} é descrita uma implementação híbrida usando FPGA, CPU e GPU,
+   alcançando tempo de execução de cerca de 300 microssegundos. O
+   pré-processamento, cálculo de gradientes e histogramas é realizado na FPGA,
+   a normalização em blocos na CPU e o classificador SVM na GPU.
+
+Em \cite{hogasic} é apresentado o desenvolvimento de um
+\sigla{ASIC}{Application-Specific Integrated
+  Circuit}(\emph{Application-Specific Integrated Circuit} - circuito integrado
+           de aplicação específica) capaz de executar classificação multiescala
+  usando HOG, 
+  a uma taxa de 60 quadros por segundo em vídeo de alta definição (\emph{Full
+                                                                   HD})

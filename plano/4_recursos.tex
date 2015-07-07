@@ -1,150 +1,193 @@
 \chapter{CUDA: Arquitetura e Programação}\label{cap:recursos}
 
-CUDA, \emph{Compute Unified Device Architecture}, é uma arquitetura de hardware 
-e software, desenvolvida pela NVidia, que permite
-programar uma GPU para executar código de aplicações gerais escrita em linguagens
-de programação de alto nível.%\ref{http://www.nvidia.com.br/object/cuda_home_new_br.html}
+\sigla{CUDA}{Compute Unified Device Architecture}(\emph{Compute Unified Device
+                                                  Architecture}) é um
+\emph{framework} de programação paralela desenvolvido pela
+NVIDIA\footnote{https://developer.nvidia.com}, envolvendo várias
+ferramentas necessárias para tal, como
+arquitetura de \emph{hardware}, \sigla{API}{Application Programming
+  Interface}(\emph{Application Programming Interface} -
+  Interface de programação de aplicações), bibliotecas, compilador e
+  \sigla{IDE}{Integrated Development Environment}(\emph{Integrated Development
+                                                  Environment} - Ambiente de
+                                                  desenvolvimento integrado).
+  Ele permite realizar programação de propósito geral para 
+  GPU (\emph{Graphical Processing Unit} - Unidade de processamento gráfico)
+  utilizando linguagens de alto nível, como C/C++, Fortran e Python
+  \cite{nvidialanguage}.
 
-CUDA nasceu como uma solução para os problemas do modelo GPGPU, onde a API gráfica
-era utilizada para computação de propósito geral. No modelo GPGPU, o programador 
-deveria ter um grande conhecimento sobre o funcionamento da GPU e da API gráfica.
-Os problemas tinham que ser descritos como coordenadas de vértices, texturas e
-\emph{shaders}, o que aumentava sua complexidade. Por último, GPUs não tinham
-suporte a características básicas de programação, e a falta de suporte a variáveis
-de ponto flutuante de dupla precisão restringia os modelos de programação que 
-poderiam ser utilizados.
+Como uma GPU não é ideal para várias aplicações de propósito geral, esta é
+usada junto a uma CPU (\emph{Central Processing Unit} - unidade central de 
+                       processamento), que irá
+chamar funções para serem executadas na GPU. Essa CPU é chamada de \emph{host},
+       enquanto a GPU é chamada de \emph{device}. O fluxo padrão de execução é
+       representado na Figura \ref{fig:GPUhost}.
+
+\begin{figure}[h!]
+  \centering
+  \caption{Fluxo de execução padrão usando CUDA.}
+  \includegraphics[keepaspectratio=true,width=0.9\textwidth]
+    {images/gpuhost.png}
+      \fonte{Wikipedia, disponível em:
+        <https://commons.wikimedia.org/wiki/File:CUDA\_processing\_flow\_(En).PNG>
+      Acesso em jun. 2015}
+  \label{fig:GPUhost}
+\end{figure}
+
+\section{Arquitetura de GPUs}
+
+A arquitetura de uma GPU difere de uma CPU
+  principalmente por
+  ser voltada a executar uma instrução em um conjunto de dados, ao invés de um
+  único dado. Para isso, as GPUs fazem uma troca entre estruturas avançadas de
+  controle de execução de código por estruturas de processamento 
+  lógico-aritimético, como demonstra a Figura \ref{fig:GPUarch}. 
+  Um conjunto de núcleos
+  que compartilha a mesma estrutura de controle é denominado \emph{Stream
+    Multiprocessor} (\sigla{SM}{Stream Multiprocessor}).
+    \footnote{Na arquitetura Kepler é
+    chamado de \emph{Next Generation Stream Multiprocessor} (\sigla{SMX}{Next
+                                                       Generation Stream
+                                                       Multiprocessor}) e na
+      Maxwell de \emph{Maxwell Stream Multiprocessor} (\sigla{SMM}{Maxwell
+                                                       Stream
+                                                       Multiprocessor}).}
   
+\begin{figure}[h!]
+  \centering
+  \caption{Diferença na arquitetura de uma CPU, à esquerda e uma GPU, à
+    direita. As estruturas de controle de execução de código são compartilhadas
+      entre vários núcleos.}
+  \includegraphics[keepaspectratio=true,width=0.9\textwidth]
+    {images/gpuarch.png}
+        \fonte{\emph{Personal Blog of} Mohamed F. Ahmed, disponível em:
+          <https://mohamedfahmed.wordpress.com/2010/05/03/cuda-computer-unified-device-architecture/>
+      Acesso em jun. 2015}
+  \label{fig:GPUarch}
+\end{figure}
 
-\section{GPU}
+Cada SM possui um banco de registradores, que é particionado entre todos os
+  seus núcleos, e três regiões de memória que são compartilhadas: memória
+  compartilhada, cache de textura e cache de constantes. A Figura \ref{fig:GPUmem}
+demonstra essas regiões de memória.
 
-Uma Graphics Processor Unit (GPU) é uma arquitetura computacional especializada 
-para tarefas com alta demanda computacional e altamente paralelizáveis, devido ao
-fato que GPUs possuem centenas de processadores, otimizados para executarem 
-tarefas de forma paralela.
+\begin{figure}[h!]
+  \centering
+  \caption{Representação da arquitetura de memória de uma GPU.}
+  \includegraphics[keepaspectratio=true,width=0.9\textwidth]
+    {images/gpumem.png}
+  \fonte{NVIDIA's \emph{Parallel Thread Execution} \sigla{ISA}{Instruction Set
+    Architecture} (\emph{Instruction Set Architecture} - arquitetura de 
+                   conjunto de instruções) \emph{Documentation}, disponível em:
+    <http://docs.nvidia.com/cuda/parallel-thread-execution/\#set-of-simt-multiprocessors-with-on-chip-shared-memory>
+      Acesso em jun. 2015}
+  \label{fig:GPUmem}
+\end{figure}
 
-Na década de 70, chips dedicados para acelerar o desenho de gráficos 
-eram utilizados em placas-mãe de jogos de fliperama. Desde então, esses chips
-evoluíram drasticamente suas funções e capacidade de processamento devido à demanda
-por gráficos 3D em tempo real, eventualmente tornando-se as GPUs que conheçemos atualmente.
-Em 1986, a Texas Instruments lançou o primeiro microprocessador com uma GPU 
-capaz de executar código para aplicações gerais. Porém, apenas em 2001, se tornou mais prático 
-utilizar GPUs para aplicações de uso geral.  
+Cada tipo de memória tem vantagens e desvantagens.
+  O acesso a memória compartilhada é mais rápido do que
+  o acesso a outros tipos de memória, as caches de constantes e de texturas são
+  somente-leitura(para o processador da GPU) e a última tem estruturas
+  especiais para fazer interpolação dos dados contidos nesta.
 
-Atualmente, GPUs podem ser encontrada em computadores pessoais, laptops,
-celulares e até mesmo em placas embarcadas. Uma GPU discreta possui uma memória 
-RAM própria e uma quantidade maior de núcleos se comparada com GPUs integradas. 
-No entanto, as GPUs discretas também são mais caras, sendo comumente utilizadas
-para aplicações gráficas e jogos eletrônicos. As GPUs integradas são encontradas
-junto a CPU na mesma pastilha e utilizam parte da memória RAM do sistema
-e não possuem tantos núcleos quanto GPUs discretas, portanto possuem menor
-capacidade computacional e são mais baratas. 
+GPUs \emph{dedicadas} são fisicamente separadas da CPU \emph{host} e, portanto,
+     possuem memória global (\emph{Device Memory} na Figura \ref{fig:GPUmem}) 
+       separada da memória RAM do \emph{host}. GPUs \emph{integradas} possuem
+       acesso direto à memória RAM do \emph{host}, e não é necessário copiar
+       memória entre a CPU e a GPU, acelerando a execução.
 
-Uma GPU possui centenas de processadores especializados para operações paralelas e
-com uma alta densidade de transistores. O núcleo de uma GPU é dedicado à executar
-um conjunto de instruções único de maneira mais rápida possível, portanto sua 
-arquitetura é muito mais simples se comparada à uma CPU que pode receber centenas
-de conjuntos de instruções.
+Cada SM tem, também, uma ou mais \emph{warps}. 
+Dentro de um \emph{warp} não é possível executar duas instruções diferentes
+  ao mesmo tempo. Caso isso ocorra (por causa de execução condicional no
+                                    código), o multiprocessador serializa as 
+  instruções. Em todas as GPUs da NVIDIA capazes de realizar processamento de
+  propósito geral, o tamanho do \emph{warp} é 32 núcleos \cite{nvidiawarp}.
 
-%Figura CPU Style Cores x Slimming Down (GPU Cores)
-%Fonte http://haifux.org/lectures/267/Introduction-to-GPUs.pdf
+\subsection{Acesso otimizado de memória}
 
-Os núcleos partilham diferentes tipos de espaços de memória e saber qual memória deve ser 
-utilizada é pivotal para um bom desempenho. Registradores e memória local são
-apenas visíveis para a linha de execução que escreve nessa memória e os dados duram
-enquanto essa linha de execução estiver ativa. A memória local é um pouco mais
-lenta do que os registradores.
+Para otimizar o acesso a memória é necessário ter em mente algumas restrições.
+Cada tipo de memória possui uma maneira específica de otimizar o acesso. A
+seguir são apresentadas as restrições necessárias para o acesso à memória
+global e memória compartilhada, usadas nesse trabalho.
 
-A memória compartilhada é visível por todas as linhas de execução presentes em um
-mesmo bloco, permitindo que essas linhas de execução comuniquem-se e troquem dados
-entre si. A memória global é visível por todas as linhas de execução da aplicação
-e pelo host e os dados são mantidos pela duração da alocação de memória feita
-pelo host. 
+\subsubsection{Memória Global}
 
-Outros tipos de memória são a memória de texturas e a memória de constantes. 
-A memória de constantes guarda todas as contantes utilizadas pela aplicação,
-efetivamente servindo apenas para leitura após o inicío da execução. A memória
-de textura guarda informações de texturas e também é utilizada como uma memória
-apenas para leitura. Ambas são beneficas para tipos especificos de aplicações.
+A memória global é lida para o dispositivo em transações 
+de 32, 64 ou 128 \emph{bytes} alinhadas, ou seja, o primeiro endereço deve ser
+múltiplo do número de \emph{bytes} lidos. Caso as \emph{threads}
+consecutivo dentro de um \emph{warp} 
+acessem endereços consecutivos da memória, essa
+leitura é \emph{coalescida} em uma única transação, desde que o tamanho do
+elemento acessado por cada \emph{thread} seja 1, 2, 4, 8 ou 16 \emph{bytes}
+\ref{nvidiawarp}.
 
-%Figura Tipos de memória
-%Fonte https://www.microway.com/hpc-tech-tips/gpu-memory-types-performance-comparison/
+Acesso não-alinhado de memória resulta em transações extras, lendo mais grupos
+de 32, 64 ou 158 \emph{bytes}, causando uma perda de desempenho. Acesso de
+memória com endereços distantes uma da outra, dentro de um \emph{warp}, causa
+grandes perdas de desempenho no acesso à memória.
 
+\subsubsection{Memória Compartilhada}
 
-O funcionamento de uma GPU se resume a receber informações geométricas da CPU como
-entrada e emitir uma imagem como saída. O processo se iniciar com a interface com a host,
-onde a GPU irá receber os comandos da CPU e carregar as informações de geometria
-da memória. O resultado desse primeiro passo será um conjunto de vértices com
-informações associadas, como texturas, coordenadas, normais, entre outros.
+A memória compartilhada é particionada em 32 bancos de memória intercalados, de
+maneira que palavras consecutivas de 32 ou 64 \emph{bits} (dependo da
+configuração do modo da memória compartilhada) são mapeados para bancos
+consecutivos. Em outras palavras, a primeira palavra está no primeiro banco, a
+segunda no segundo, e assim por diante até o trigésimo segundo banco, depois do
+qual o processo recomeça.
+Quando duas \emph{threads} dentro de um \emph{warp} acessam duas palavras
+diferentes dentro do mesmo banco, ocorre um \emph{conflito de banco}. Caso um
+conflito de banco ocorra, o acesso a memória é serializado entre as
+\emph{threads} correspondentes. Duas \emph{threads} acessando exatamente o
+mesmo endereço de memória não causa um conflito, resultando em um
+\emph{broadcast} no caso de uma leitura e apenas uma das \emph{threads}
+realizando a gravação, no caso de uma gravação de memória (qual \emph{thread},
+exatamente, é indeterminado).
 
-O conjunto de vértices resultante da comunicação com o host está em função do
-espaço do objeto, sendo necessário transformá-lo para ser exibido no espaço da tela
-do computador. Essa fase é chamada de processamento de vértices, onde todos os 
-dados recebidos na etapa anterior são modificados para serem exibidos na tela. 
-Nessa etapa não há a criação ou o descarte de vértices, portanto todos os vértices 
-recebidos da interface com o host são transformados.
+\section{Programação em CUDA}
 
-Após definir os locais dos vértices na tela, criam-se os triângulos que irão 
-preencher a tela. Antes de preencher a tela, triângulos fora do campo de visão 
-são rejeitados, sendo apenas utilizados os triângulos que irão compor os pixels
-da tela. Essa fase é chamada de configuração de triângulos. 
+O modelo de programação usando a API de programação CUDA é baseado na
+  arquitetura física da GPU, com sua separação em \emph{Stream Multiprocessors}
+e núcleos. Uma função da GPU é executada várias vezes, dependendo dos
+  parâmetros de configuração usados.
 
-Após inserir os triângulos na tela, toda informação de texturas, normais, posição,
-é utilizada para definir a cor final do pixel. Aqui são utilizadas técnicas como 
-operações matemáticas e mapeamento de texturas para colorir o pixel.Essa etapa é 
-chamada de processamento de pixels.
+  As funções a serem executadas na GPU são chamadas de \emph{kernels}.
+  O \emph{host} configura e inicia a execução assíncrona dos \emph{kernels},
+    usando dois parâmetros para escolher o número de vezes que o \emph{kernel}
+será executado: número de blocos e \emph{threads} por bloco. Cada \emph{thread}
+é executada em um único núcleo e cada bloco é executado em um único SM. A
+  divisão dos blocos em \emph{warps} e o escalonamento destes são feitos
+  automaticamente pelo SM, sem garantia da ordem de execução. Caso ocorra
+  serialização dentro de um \emph{warp}, também não há garantia da ordem de
+  execução. A configuração do número de blocos para a execução de um
+  \emph{kernel} é chamada de \emph{grid}.
 
-Por último, a informação dos pixels é escrita para um framebuffer e a imagem
-final é demonstrada na tela. A última etapa é chamada interface de memória. 
+  De maneira a facilitar a programação para aplicações onde os dados são
+  organizados logicamente de maneira 2D (como, por exemplo, processamento de
+                                         imagens) ou 3D (como, por exemplo,
+                                                         simulações físicas),
+  as \emph{threads} e blocos podem ser configurados com uma estrutura especial
+    representando um escalar inteiro de três dimensões 
+    (duas dimensões são alcançadas fazendo com que a terceira tenha tamanho 1).
+    A Figura \ref{fig:GPUgrid} representa a organização em blocos de 
+    \emph{threads} em duas dimensões.
 
-%Figura pipeline
+\begin{figure}[h!]
+  \centering
+  \caption{\emph{Grid} de blocos de \emph{threads} de duas dimensões.}
+  \includegraphics[keepaspectratio=true,width=0.9\textwidth]
+    {images/gpugrid.png}
+    \fonte{\emph{CUDA C Progamming Guide}, disponível em:
+      <http://docs.nvidia.com/cuda/cuda-c-programming-guide/\#thread-hierarchy>
+      Acesso em jun. 2015}
+  \label{fig:GPUgrid}
+\end{figure}
 
-\section{Arquitetura}
-
-%ftp://download.nvidia.com/developer/cuda/seminar/TDCI_Arch.pdf
-%http://docs.nvidia.com/cuda/cuda-c-programming-guide/#axzz3dtAz2c5O
-
-A arquitetura CUDA foi desenvolvida pela NVidia com o objetivo de otimizar o uso de
-GPUs para aplicações de uso geral, utilizando código escrito em linguagens de 
-programação de alto nível. 
-
-Uma GPU consiste de centenas de processadores em paralelo, interligados por interfaces 
-de memória muito mais rápidas e complexas. 
-
-Um núcleo CUDA é um núcleo de GPU criado para ser programado para aplicações gerais. 
-Esses núcelos seguem o paradigma 
-SIMD (Single Instruction, Multiple Data), onde um grupo de processadores executam
-a mesma instrução de forma paralela, porém cada processador é encarregado
-de um pacote de dados diferente. 
-
-GPUs utilizam a arquitetura SIMD (Single Instruction, Multiple Data), na qual 
-a mesma instrução é executada em diferentes dados. 
-
-
-\section{Programação}
-
-CUDA, uma \emph{framework} desenvolvida pela NVidia, permite que se utilize uma
-GPU para processamento de propósito geral, também conhecido como GPGPU
-(\emph{General-purpose computing on graphics processing units}). O
-objetivo é que aplicações possam utilizar a arquitetura paralela e velocidade
-fornecidas por uma GPU para fins além de aplicações gráficas.
-
-A API permite organizar as threads, linhas de execução de programa que desenvolvem
-atividades de forma concorrente, em blocos e criar conjuntos de
-blocos chamados grids. É comum utilizarmos um número muito maior de blocos nos grids
-do que os fisicamente disponíveis na placa, então a API se encarrega de
-realizar o escalonamento automático das atividades entre os processadores e
-blocos fisicamente existentes. 
-
-Cada thread e bloco possui uma ID própria, sendo possível utilizar essa informação para que cada thread
-trabalhe com um conjunto de dados únicos. A API permite também organizar as threads em blocos e grids de maneira 2D ou 3D,
-ficando o ID da Thread ou Bloco como uma tupla. Em processamento de imagens, as tarefas são usualmente realizadas em matrizes de duas 
-dimensões, portanto utilizar uma organização em 2D facilita a escrita de código, com cada Thread processando um pixel da imagem.
-
-Sendo possível programar e executar centenas de threads de forma única, também
-é provável que existam milhares de erros e bugs à serem consertados. Como o
-programa principal e cada thread são executados de forma independente, não há
-uma falha ou aviso quando algo está errado. É necessário esperar que as threads
-terminem suas execuções e sincronizá-las com o programa para que possamos
-procurar o erro. A API possui funções que permitem extrair qual o último erro
-encontrado na execução e assim podemos eliminar bugs de nossas aplicações.
+Cada \emph{thread} em um bloco tem um \emph{id} único e cada bloco em um
+  \emph{grid} tem, também, um \emph{id} único. Ambos os \emph{ids} são
+  representados usando um escalar de três dimensões. Cada \emph{thread} tem
+  acesso, em tempo de execução, a quatro constantes escalares tridimensionais
+  representando: \emph{id} da \emph{thread} atual dentro do bloco, \emph{id} do
+  bloco a qual a \emph{thread} pertence, dimensões do tamanho do bloco e
+  dimensões do tamanho do \emph{grid}. Essas constantes podem ser usadas para
+  localizar em quais posições na memória a \emph{thread} deve operar.
 

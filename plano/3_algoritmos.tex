@@ -1,28 +1,25 @@
 \chapter{Histogramas de gradientes orientados}
 
-Neste capítulo são primeiramente definidos alguns conceitos básicos e então
-o algoritmo implementado nesse projeto é apresentado, o
+Neste capítulo são primeiramente definidos alguns conceitos básicos. Em
+seguida, o algoritmo implementado nesse projeto é apresentado, o
 \sigla{HOG}{Histogram of Oriented Gradients} (\emph{Histogram of Oriented
-Gradients}) \cite{dalal2005histograms}, um descritor de
-imagens que representa distribuição local das orientações dos gradientes.
+Gradients} - Hisgtogramas de Gradientes Orientados) \cite{dalal2005histograms}, 
+  um descritor de
+imagens que representa a distribuição local das orientações dos gradientes.
 
-\section{Definições}
+\section{Imagem e \emph{Pixel}}
 
-Aqui são apresentadas as definições usadas no trabalho de imagem, \emph{pixel}
-e gradiente de imagem.
-
-\subsection{Imagem}
-
-Para os propósitos desse trabalho \emph{imagem} é definida como uma matriz
-bidimensional $I$, sendo que $I[x,y]$ representa o \emph{pixel} contido na
+Para os propósitos desse trabalho, uma \emph{imagem} é definida como uma matriz
+bidimensional $I$, sendo que $I[x,y]$ representa o elemento contido na
 linha $y$ e coluna $x$ da matriz. Para respeitar a convenção normalmente
-utilizada, os índices $x$ e $y$ iniciarão em $0$ e o \emph{pixel} $I[0,0]$ será
+utilizada, os índices $x$ e $y$ iniciarão em $0$, e o \emph{pixel} $I[0,0]$ será
 o canto superior esquerdo da imagem.
 
-\subsection{\emph{Pixel}}
-
 Cada elemento $I[x,y]$ de uma imagem é denominado de \emph{pixel}, sendo que
-este pode conter informações de um ou mais \emph{canais de cor}. Neste
+este pode conter informações de um ou mais \emph{canais de cor}. Cada canal de
+cor contém um valor na faixa $[0,1]$, representando intensidade luminosa
+naquele canal de cor. Caso a imagem possua apenas um canal de cor, será uma
+imagem em escala de cinza. Neste
 trabalho, serão usadas imagens em escala de cinza, contendo apenas um canal, e
 imagens coloridas RGB, contendo os canais de cor vermelho, verde e azul.
 
@@ -71,12 +68,6 @@ A magnitude do gradiente de um \emph{pixel} terá valores próximos de zero em
 regiões homogêneas da imagem e valores diferentes de zero nas regiões de
 transição de intensidade, ou seja, nas regiões de borda.
 
-A figura \ref{fig:gradients} demonstra exemplos de gradientes obtidos para uma
-imagem (normalizando os valores de gradiente para valores válidos para uma
-        imagem).
-
-TODO: criar figuras de exemplo para colocar aqui.
-
 Existem várias maneiras de obter o gradiente para uma imagem colorida. Será
 utilizada a mesma escolhida em
 \cite{dalal2005histograms}. Para cada \emph{pixel} será
@@ -89,14 +80,14 @@ O descritor de características HOG, descrito em \cite{dalal2005histograms},
   é composto por
 diversos histogramas das orientações dos gradientes da imagem, calculados em 
 uma partição da imagem em diferentes regiões, chamadas de \emph{células}.
-
 O cálculo do HOG é dividido em uma série de etapas: normalização de cor da 
 imagem, cálculo dos gradientes, cálculo dos histogramas e normalização de 
 contraste local.
 
 \subsection{Normalização}
 
-TODO
+Primeiramente é realizada uma normalização de cor, substituindo o valor de cada
+canal de cor de cada \emph{pixel} pela sua raiz quadrada.
 
 \subsection{Cálculo dos gradientes}
 
@@ -111,14 +102,18 @@ do canal de cor que tiver a maior magnitude naquele \emph{pixel}.
 A região a ser descrita (ou, de maneira equivalente, as matrizes de magnitude e
                          orientação de gradiente) 
 é particionada em uma malha de células de mesmo 
-tamanho, e um histograma é calculado para cada célula, como demonstra a figura
-\ref{fig:partition_cell}
+tamanho, e um histograma é calculado para cada célula, como demonstra a Figura
+\ref{fig:partition_cell}. Em \cite{dalal2005histograms} são usadas $128$
+células de $8 \times 8$ \emph{pixels}, em uma janela de $128 \times 64$
+\emph{pixels}, porém esse valor pode ser modificado de acordo com as
+necessidades do problema a ser resolvido.
 
-\begin{figure}[h!]
+\begin{figure}[h]
   \centering
+    \caption{Representação da partição em células.}
     \includegraphics[keepaspectratio=true,width=0.9\textwidth]
       {images/hist_cell.jpg}
-    \caption{Representação da partição em células. Fonte:Gil's CV blog,
+  \fonte{Gil's \emph{CV blog},
       disponível em:
         <https://gilscvblog.wordpress.com/2013/08/18/a-short-introduction-to-descriptors/>
           Acesso em jun. 2015.}
@@ -130,84 +125,149 @@ representam faixas de ângulos da orientação do gradiente e são ponderadas pela
 magnitude dos mesmos. Para evitar artefatos de quantização no histograma
 obtido, cada gradiente é dividido entre as duas classes cujo limiar é o mais
 próximo do ângulo do gradiente, ponderando pela diferença entre o ângulo do 
-gradiente e o limiar. 
+gradiente e o limiar. A Figura \ref{fig:histseparable} representa três exemplos
+básicos da divisão em classes, quando os gradientes estão exatamente no centro
+de uma classe ou exatamente na divisão entre duas classes.
 
-A figura \ref{fig:histogram} e as equações
-\ref{eq:delta_theta}, \ref{eq:c1}, \ref{eq:c2}, \ref{eq:mod_c} e 
-\ref{eq:limiar} 
-demonstram as relações entre o vetor gradiente de
-um \emph{pixel} e o valor adicionado no histograma. 
-
-\begin{figure}[h!]
+\begin{figure}[h]
   \centering
-    \includegraphics[keepaspectratio=true,width=0.9\textwidth]
-      {images/polar_hist.png}
-    \caption{À esquerda a representação cartesiana e polar do gradiente. À
-      direita representado o histograma e os valores somados a ele por esse
-        gradiente.}
-\label{fig:histogram}
+  \caption{(\ref{fig:gradwheel}) Três gradientes e (\ref{fig:histcolor}) o 
+    histograma respectivo obtido.}
+  \begin{subfigure}[t]{0.35\textwidth}
+    \includegraphics[width=\textwidth]{images/gradwheel.png}
+    \caption{Gradientes}
+    \label{fig:gradwheel}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.55\textwidth}
+    \includegraphics[width=\textwidth]{images/histcolor.png}
+    \caption{Histograma}
+    \label{fig:histcolor}
+  \end{subfigure}
+  \label{fig:histseparable}
+  \fonte{Autoria Própria}
 \end{figure}
+
+Na Figura \ref{fig:histsingle} está representada a divisão entre duas classes
+quando a orientação do gradiente está em uma posição qualquer.
+
+\begin{figure}[h]
+  \centering
+  \caption{(\ref{fig:graddetail}) Um gradiente e (\ref{fig:gradsingle}) as duas 
+    classes do histograma onde ele será adicionado.}
+  \begin{subfigure}[b]{0.55\textwidth}
+    \includegraphics[width=\textwidth]{images/gradsingle.png}
+    \caption{Gradientes}
+    \label{fig:gradsingle}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.35\textwidth}
+    \includegraphics[width=\textwidth]{images/graddetail.png}
+    \caption{Histograma}
+    \label{fig:graddetail}
+  \end{subfigure}
+  \label{fig:histsingle}
+  \fonte{Autoria Própria}
+\end{figure}
+
+As posições onde um gradiente será colocado podem ser obtidas em tempo
+constante, associando a cada classe um identificador e
+utilizando relações calculadas a partir do ângulo do
+gradiente e do número de classes do histograma. A largura $|C|$ da faixa de 
+valores de uma classe do histograma, sendo $n$ o
+número de classes do histograma, é dada pela equação \ref{eq:mod_c}.
 
 \begin{equation} \label{eq:mod_c}
 {|C|} = {{2 \pi} \over {n}}
 \end{equation}
 
-Sendo \(|C|\) a largura da faixa de valores de uma classe do histograma e $n$ o
-número de classes do histograma.
-
-\begin{equation} \label{eq:limiar}
-  \theta_{limiar} = \left\lceil {{I_{\theta}} \over {|C|}} - 0.5 \right\rceil
-  \cdot |C|
-\end{equation}
-
-Sendo $\theta_{limiar}$ o valor de ângulo limiar que divide as duas classes nas
-quais o gradiente será dividido.
-
-\begin{equation} \label{eq:delta_theta}
-  \Delta \theta = {I_{\theta} - \theta_{limiar}}
-\end{equation}
-
-\begin{equation} \label{eq:c1}
-  C_1 = \left( 0.5 - {{\Delta \theta} \over {|C|}}\right) \cdot I_{\rho}
-\end{equation}
-
-\begin{equation} \label{eq:c2}
-  C_2 = \left( 0.5 + {{\Delta \theta} \over {|C|}}\right) \cdot I_{\rho}
-\end{equation}
-
-Sendo $C_1$ e $C_2$ os valores adicionados nas duas classes do histograma.
-
-As posições de $C_1$ e $C_2$ podem ser calculadas em tempo constante através
-das equações \ref{eq:p_c1} e \ref{eq:p_c2}.
+Associando a cada classe um identificador entre $0$ e $n-1$ ($a = 0$, $b = 1$,
+                                                             $c = 3$,...),
+           pode-se calcular em quais classes $id_{left}(G_{\theta})$ e
+           $id_{right}(G_{\theta}$ através das equações \ref{eq:p_c1} e 
+                       \ref{eq:p_c2}.
 
 \begin{equation} \label{eq:p_c1}
-id(C_1) = 
-\left\lfloor {{I_{\theta} - \left( {{|C|} \over {2}} \right)} \over {|C|}} 
+id_{left}(G_{\theta}) = 
+\left\lfloor {{G_{\theta}} \over {|C|}} - 0.5
 \right\rfloor \bmod n
 \end{equation}
 
 \begin{equation} \label{eq:p_c2}
-id(C_2) = \left( id (C_1) + 1 \right) \bmod n
+id_{right}(G_{\theta}) = \left( id (C_1) + 1 \right) \bmod n
+\end{equation}
+
+O valor de ângulo limiar $\theta_{limiar}$ que divide as duas classes é obtido
+pela equação \ref{eq:limiar}
+
+\begin{equation} \label{eq:limiar}
+  \theta_{limiar} = \left\lceil {{G_{\theta}} \over {|C|}} - 0.5 \right\rceil
+  \cdot |C|
+\end{equation}
+
+A diferença entre $G_{\theta}$ e $\theta{limiar}$, representado por
+$\Delta \theta$, é obtida pela equação \ref{eq:delta_theta}. Note que o valor
+pode ser negativo.
+
+\begin{equation} \label{eq:delta_theta}
+  \Delta \theta = {G_{\theta} - \theta_{limiar}}
+\end{equation}
+
+Finalmente, os valores somados às classes $id_{left}(G_{\theta})$ e
+$id_{right}(G_{\theta})$, respectivamente denominados de $S_L$ e $S_R$, podem
+ser calculados pelas equações \ref{eq:c1} e \ref{eq:c2}
+
+\begin{equation} \label{eq:c1}
+  S_L = \left( 0.5 - {{\Delta \theta} \over {|C|}}\right) \cdot G_{\rho}
+\end{equation}
+
+\begin{equation} \label{eq:c2}
+  S_R = \left( 0.5 + {{\Delta \theta} \over {|C|}}\right) \cdot G_{\rho}
 \end{equation}
 
 Se o valor de \(I_{\phi}\) for menor do que \(\theta_{limiar}\), o valor de
 \(\Delta \theta\) vai ser negativo e a maior parte do gradiente vai ser
-colocada na classe \(C_1\). Caso contrário, a maior parte na classe \(C_2\).
+colocada na classe $id_{left}(G_{\theta})$. Caso contrário, a maior parte será
+colocada na classe $id_{right}(G_{\theta})$.
 O valor de \(\Delta \theta\) sempre vai estar entre -0.5 e +0.5, senão o limiar 
-mais próximo estaria entre outras duas classes. Os valores \(C_1\) e \(C_2\)
-  será adicionado nas duas classes do histograma.
+mais próximo estaria entre outras duas classes. 
 
-Cada histograma obtido é normalizado, e depois eles são agrupados em blocos de 
-tamanho fixo. O agrupamento em blocos funciona como uma janela deslizante sobre
+\subsection{Geração de descritores HOG}
+
+Os histogramas obtidos são agrupados em blocos de 
+tamanho fixo e então normalizados dentro de cada bloco.
+O agrupamento em blocos funciona como uma janela deslizante sobre
 as células, com cada histograma calculado possivelmente aparecendo
-múltiplas vezes no descritor final. TODO: colocar imagem para demonstrar o
-agrupamento em blocos. Dentro de cada bloco, os histogramas correspondentes são 
-concatenados e normalizados novamente. O descritor final é a concatenação do
+múltiplas vezes no descritor final. 
+
+Em \cite{dalal2005histograms} são
+apresentadas três maneiras de normalizar os blocos, todas com desempenho
+semelhante(para a tarefa de de localização de pedestres). Dessas, foi escolhida
+a \emph{L1-sqrt}, por ser computacionalmente mais leve.
+Sendo $H$ um vetor contendo os valores de cada um dos
+histogramas que compõem o bloco, $H_i$ um elemento desse vetor e $\epsilon$ uma
+constante pequena maior do que zero, a equação
+\ref{eq:L1norm} demonstra o cálculo da norma L1, denotada por $\|H\|$
+e a equação \ref{eq:L1sqrt} a normalização final resultante. 
+
+\begin{equation} \label{eq:L1norm}
+\|H\| = \sum_{i}H_i
+\end{equation}
+
+\begin{equation} \label{eq:L1sqrt}
+H_i = \sqrt{{{H_i} \over {\|H\| + \epsilon}}}
+\end{equation}
+
+O descritor final é a concatenação do
 resultado de cada bloco, resultando em um vetor de \emph{número de blocos
   \(\times\) 
 número de células por bloco \(\times\) número de classes do histograma} 
-dimensões. Para a detecção de pessoas, em \cite{dalal2005histograms}, foram
-usados $105$ blocos, com $4$ blocos por célula, e um histograma de $9$ classes,
-       totalizando em $105 \times 4 \times 9 = 3780$ características.
+dimensões. Para a detecção de pessoas, em \cite{dalal2005histograms}, foi
+utilizada uma janela de $64 \times 128$ \emph{pixels}, com células de 
+$8 \times 8$ \emph{pixels}, resultando numa malha de $8 \times 16$ células.
+Para o agrupamento em blocos, foram utilizados blocos de tamanho $2 \times 2$,
+     deslocando uma célula por vez, o que resulta numa malha de $7 \times 15 =
+     105$
+     blocos. O descritor final tem, então, $105$ blocos, 
+     com $4$ células por bloco, e um histograma de $9$ classes,
+       totalizando em $105 \times 4 \times 9 = 3780$ dimensões.
 
 
