@@ -9,5 +9,5 @@
 # armazenada no computador local. A partir deste ponto a compilação do PDF final
 # deve ser quase imediato.
 
-docker run --rm -it -v $(pwd):/mnt gcr.io/site-fdk/utfpr-latex-builder \
+docker run --rm -it -v $(pwd):/mnt gcr.io/fdk-pub-docker/utfpr-latex-builder \
 	bash -c "cd /mnt; ./build.sh"
